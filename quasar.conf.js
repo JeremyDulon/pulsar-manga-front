@@ -1,5 +1,6 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
+const path = require('path')
 
 module.exports = function (ctx) {
   return {
@@ -7,6 +8,8 @@ module.exports = function (ctx) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
+      'axios',
+      'lodash'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -18,7 +21,7 @@ module.exports = function (ctx) {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v4',
-      // 'fontawesome-v5',
+      'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
@@ -29,8 +32,8 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      iconSet: 'material-icons', // Quasar icon set
-      lang: 'en-us', // Quasar language pack
+      iconSet: 'fontawesome-v5', // Quasar icon set
+      lang: 'fr', // Quasar language pack
 
       // Possible values for "all":
       // * 'auto' - Auto-import needed Quasar components & directives
@@ -43,6 +46,7 @@ module.exports = function (ctx) {
 
       components: [],
       directives: [],
+      cssAddon: true,
 
       // Quasar plugins
       plugins: []
@@ -73,6 +77,10 @@ module.exports = function (ctx) {
             formatter: require('eslint').CLIEngine.getFormatter('stylish')
           }
         })
+        cfg.resolve.alias = {
+          ...cfg.resolve.alias,
+          '@': path.resolve(__dirname, './src/')
+        }
       }
     },
 
@@ -139,7 +147,6 @@ module.exports = function (ctx) {
       // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
       id: 'com.lykaos.pulsar.manga'
     },
-
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
     capacitor: {

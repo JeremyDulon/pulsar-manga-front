@@ -1,11 +1,25 @@
 <template>
-  <q-page class="flex flex-center">
-    <img alt="Quasar logo" src="~assets/quasar-logo-full.svg">
+  <q-page>
+    <manga-list :manga-list="mangaList" />
   </q-page>
 </template>
 
 <script>
+import MangaList from 'components/list/MangaList'
+import { getFilteredList } from '@/utils/manga'
+
 export default {
-  name: 'PageIndex'
+  name: 'PageIndex',
+  components: { MangaList },
+  data () {
+    return {
+      mangaList: []
+    }
+  },
+  async created () {
+    this.mangaList = await getFilteredList((manga) => {
+      return manga.h > 40000000
+    })
+  }
 }
 </script>

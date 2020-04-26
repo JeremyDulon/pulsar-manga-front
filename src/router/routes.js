@@ -1,19 +1,44 @@
 import Index from 'pages/Index'
+import Manga from 'pages/Manga'
+import SearchManga from 'pages/SearchManga'
+import Chapter from 'pages/Chapter'
+import NoLayout from 'layouts/NoLayout'
+import TabsLayout from 'layouts/TabsLayout'
 
 export const ROUTE_NAME_MANGA = 'manga'
 
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MyLayout.vue'),
+    component: TabsLayout,
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      {
+        path: '',
+        name: 'home',
+        component: Index
+      },
+      {
+        path: 'manga/:id',
+        name: 'manga',
+        component: Manga
+      },
+      {
+        path: 'search',
+        name: 'search',
+        component: SearchManga
+      }
     ]
   },
   {
-    path: 'home',
-    name: 'home',
-    component: Index
+    path: '/chapter/',
+    component: NoLayout,
+    children: [
+      {
+        path: ':id',
+        name: 'chapter',
+        component: Chapter
+      }
+    ]
   }
 ]
 
