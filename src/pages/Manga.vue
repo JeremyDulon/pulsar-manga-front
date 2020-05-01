@@ -1,19 +1,39 @@
 <template>
-  <q-page padding>
-    <span>{{ manga.title }}</span>
-    <div class="row q-col-gutter-xs">
-      <div class="col-md-4 col-xs-6" v-for="chapter in chapters" :key="chapter.id" @click="goToChapter(chapter.id)">
-        <q-card>
-          <q-card-section>
-            <div class="col text-center">
-              <div>{{ chapter.number }}</div>
-              <div>{{ chapter.number }}</div>
-            </div>
-          </q-card-section>
-        </q-card>
+  <div>
+    <q-header reveal elevated>
+      <q-toolbar>
+        <q-toolbar-title>
+          <strong>Quasar</strong> Framework
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+    <q-page padding>
+      <div class="row">
+        <h6>Liste des chapitres</h6>
       </div>
-    </div>
-  </q-page>
+      <div class="row q-col-gutter-sm">
+        <div class="col-xs-3" v-for="chapter in chapters" :key="chapter.id" @click="goToChapter(chapter.id)">
+          <q-card>
+            <q-card-section>
+              <div class="col text-center">
+                <div>{{ chapter.number }}</div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+      <q-page-sticky expand position="top">
+        <q-toolbar class="bg-accent text-white">
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+          </q-avatar>
+          <q-toolbar-title>
+            Page Title
+          </q-toolbar-title>
+        </q-toolbar>
+      </q-page-sticky>
+    </q-page>
+  </div>
 </template>
 <script>
 import { getManga } from '@/utils/api'
@@ -44,3 +64,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .q-card__section {
+    padding: 8px 16px;
+  }
+</style>
