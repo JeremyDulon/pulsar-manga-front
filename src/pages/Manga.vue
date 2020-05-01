@@ -3,7 +3,7 @@
     <q-header reveal elevated>
       <q-toolbar>
         <q-toolbar-title>
-          <strong>Quasar</strong> Framework
+          <strong>{{ manga.title }}</strong>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -12,7 +12,7 @@
         <h6>Liste des chapitres</h6>
       </div>
       <div class="row q-col-gutter-sm">
-        <div class="col-xs-3" v-for="chapter in chapters" :key="chapter.id" @click="goToChapter(chapter.id)">
+        <div class="col-xs-3" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
           <q-card>
             <q-card-section>
               <div class="col text-center">
@@ -24,12 +24,10 @@
       </div>
       <q-page-sticky expand position="top">
         <q-toolbar class="bg-accent text-white">
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
-          </q-avatar>
           <q-toolbar-title>
             Page Title
           </q-toolbar-title>
+          <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
         </q-toolbar>
       </q-page-sticky>
     </q-page>
@@ -43,7 +41,8 @@ export default {
   data () {
     return {
       manga: {},
-      chapters: []
+      chapters: [],
+      sortDesc: true
     }
   },
   async created () {
@@ -60,6 +59,14 @@ export default {
   methods: {
     goToChapter (id) {
       this.$router.push({ name: 'chapter', params: { id: id, mangaId: this.$route.params.id } })
+    }
+  },
+  computed: {
+    sortedChapters () {
+      return this._.orderBy(this.chapters, ['number'], [ this.sortDesc ? 'desc' : 'asc' ])
+    },
+    sortIcon () {
+      return 'fas fa-' + this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-up'
     }
   }
 }
