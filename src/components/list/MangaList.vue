@@ -1,6 +1,6 @@
 <template>
   <div class="row manga-list">
-    <q-intersection class="col-xs-4 q-pa-xs"
+    <q-intersection once :threshold="0.75" class="col-xs-4 col-sm-3 col-lg-2 q-pa-xs"
          v-for="manga in mangaList"
          :key="manga.i">
       <manga-card :manga="manga" />

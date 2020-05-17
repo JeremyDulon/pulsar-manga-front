@@ -28,7 +28,9 @@ module.exports = {
     '__statics': true,
     'process': true,
     'Capacitor': true,
-    'chrome': true
+    'chrome': true,
+    // lodash
+    _: true
   },
 
   // add your custom rules here

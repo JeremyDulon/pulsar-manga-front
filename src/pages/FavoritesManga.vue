@@ -1,24 +1,24 @@
 <template>
   <q-page>
-    <manga-list :manga-list="mangaList" />
+    <manga-list :manga-list="favorites" />
   </q-page>
 </template>
 
 <script>
 import MangaList from 'components/list/MangaList'
-import { getFilteredList } from '@/utils/manga'
+import { mapState } from 'vuex'
 
 export default {
-  name: 'Index',
+  name: 'FavoritesManga',
   components: { MangaList },
   data () {
     return {
       mangaList: []
     }
   },
-  async created () {
-    this.mangaList = await getFilteredList((manga) => {
-      return manga.h > 40000000
+  computed: {
+    ...mapState({
+      favorites: 'favorites'
     })
   }
 }

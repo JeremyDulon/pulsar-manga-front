@@ -1,9 +1,10 @@
 import Index from 'pages/Index'
-import Manga from 'pages/Manga'
+import DetailManga from 'pages/DetailManga'
 import SearchManga from 'pages/SearchManga'
 import Chapter from 'pages/Chapter'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
+import FavoritesManga from 'pages/FavoritesManga'
 
 export const ROUTE_NAME_MANGA = 'manga'
 
@@ -20,12 +21,17 @@ const routes = [
       {
         path: 'manga/:id',
         name: 'manga',
-        component: Manga
+        component: DetailManga
       },
       {
         path: 'search',
         name: 'search',
         component: SearchManga
+      },
+      {
+        path: 'favorites',
+        name: 'favorites',
+        component: FavoritesManga
       }
     ]
   },

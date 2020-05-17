@@ -9,7 +9,7 @@
   </q-card>
 </template>
 <script>
-import { CDN_BASE_URL } from '@/consts/api'
+import { getMangaImgUrl } from '@/utils/manga'
 
 export default {
   name: 'MangaCard',
@@ -25,10 +25,7 @@ export default {
   },
   computed: {
     mangaImage () {
-      if (this.manga.im) {
-        return CDN_BASE_URL + this.manga.im
-      }
-      return ''
+      return getMangaImgUrl(this.manga.im)
     }
   }
 }

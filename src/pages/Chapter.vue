@@ -1,37 +1,51 @@
 <template>
-  <q-page>
-    <q-carousel v-model="currentImage"
-                animated
-                swipeable
-                fullscreen
-                ref="chapter">
-      <q-carousel-slide v-for="image in images"
-                        :key="image.number"
-                        :name="image.number"
-                        :img-src="chapterImage(image.src)"
-                        :draggable="false"
-                        class="chapter-slide"
-                        @click="navigation = !navigation"/>
-      <template v-slot:control v-if="navigation">
-        <q-carousel-control position="bottom" :offset="[18, 18]">
-          <q-slider v-model="currentImage" :min="firstNumber" :max="lastNumber"></q-slider>
-        </q-carousel-control>
-      </template>
-    </q-carousel>
-    <q-page-sticky v-if="navigation" position="top-left" :offset="[18, 18]" style="z-index: 6001;">
-      <q-btn fab icon="fa fa-angle-left" color="black" @click="backToManga"  />
-    </q-page-sticky>
-  </q-page>
+  <div>
+    <q-header v-if="navigation" class="bg-black" style="z-index: 9999">
+      <q-toolbar>
+        <q-btn size="lg" icon="fa fa-angle-left" color="black" @click="backToManga"  />
+        <q-toolbar-title>
+          <div class="text-h6">{{ currentImage+1 }}/{{ lastNumber }} {{ manga.title }} {{ chapter.number }}: {{ chapter.title }}</div>
+          <span></span>
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+    <q-page>
+      <q-carousel v-model="currentImage"
+                  animated
+                  swipeable
+                  fullscreen
+                  transition-next="slide-left"
+                  transition-prev="slide-right"
+                  ref="chapterSlider">
+        <q-carousel-slide v-for="image in images"
+                          :key="image.number"
+                          :name="image.number"
+                          :img-src="chapterImage(image.src)"
+                          :draggable="false"
+                          class="chapter-slide"
+                          @click="navigation = !navigation"/>
+        <template v-slot:control v-if="navigation">
+          <q-carousel-control position="bottom" :offset="[18, 18]">
+            <q-slider v-model="currentImage"
+                      label
+                      label-always
+                      :min="firstNumber"
+                      :max="lastNumber" />
+          </q-carousel-control>
+        </template>
+      </q-carousel>
+    </q-page>
+  </div>
 </template>
 <script>
-import { getChapter } from '@/utils/api'
+import { getChapter, getManga } from '@/utils/api'
 import { CDN_BASE_URL } from '@/consts/api'
 
 export default {
   name: 'ChapterPage',
   data () {
     return {
-      mangaId: null,
+      manga: {},
       chapter: {},
       images: [],
       currentImage: 0,
@@ -43,15 +57,24 @@ export default {
   async created () {
     window.addEventListener('keyup', (e) => {
       if (e.key === 'ArrowLeft') {
-        this.$refs.chapter.previous()
+        this.$refs.chapterSlider.previous()
       }
       if (e.key === 'ArrowRight') {
-        this.$refs.chapter.next()
+        this.$refs.chapterSlider.next()
       }
     })
-    this.mangaId = this.$route.params.mangaId
-    this.chapter = await getChapter(this.$route.params.id)
-    this.images = this.chapter.images.map(i => {
+    this.manga = await getManga(this.$route.params.mangaId)
+    this.manga.chapters = this.manga.chapters.map(c => {
+      return {
+        id: c[3],
+        title: c[2],
+        number: c[0],
+        date: c[1]
+      }
+    })
+    let chapter = await getChapter(this.$route.params.id)
+    this.chapter = this._.find(this.manga.chapters, (c) => c.id === this.$route.params.id)
+    this.images = chapter.images.map(i => {
       return {
         number: i[0],
         src: i[1],
@@ -59,8 +82,8 @@ export default {
         w: i[3]
       }
     })
-    this.firstNumber = this._.maxBy(this.images, (i) => i.number).number
-    this.lastNumber = this._.minBy(this.images, (i) => i.number).number
+    this.firstNumber = this._.minBy(this.images, (i) => i.number).number
+    this.lastNumber = this._.maxBy(this.images, (i) => i.number).number
   },
   methods: {
     chapterImage (path) {
