@@ -27,8 +27,8 @@ export default function (/* { ssrContext } */) {
 
   if (process.env.DEV && module.hot) {
     module.hot.accept(['./favorites'], () => {
-      const favorites = require('./favorites').default
-      Store.hotUpdate({ modules: { favorites: favorites } })
+      const newFavorites = require('./favorites').default
+      Store.hotUpdate({ modules: { favorites: newFavorites } })
     })
   }
 

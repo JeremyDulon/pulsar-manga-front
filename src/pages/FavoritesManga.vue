@@ -1,12 +1,13 @@
 <template>
   <q-page>
-    <manga-list :manga-list="favorites" />
+    <manga-list :manga-list="getFavorites" />
   </q-page>
 </template>
 
 <script>
 import MangaList from 'components/list/MangaList'
-import { mapState } from 'vuex'
+import { createNamespacedHelpers } from 'vuex'
+const storeFavorites = createNamespacedHelpers('favorites')
 
 export default {
   name: 'FavoritesManga',
@@ -17,8 +18,8 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      favorites: 'favorites'
+    ...storeFavorites.mapGetters({
+      getFavorites: 'getFavorites'
     })
   }
 }

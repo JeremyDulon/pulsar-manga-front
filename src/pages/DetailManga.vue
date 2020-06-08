@@ -1,56 +1,64 @@
 <template>
-  <div>
-    <q-header>
-      <q-toolbar class="bg-cyan-9">
-        <q-card flat class="bg-cyan-9">
-          <q-card-section horizontal>
-            <q-img class="col-xs-3" :src="mangaImage" contain style="max-height: 100px; max-width: 100px;" />
-            <q-card-section>
-              <q-toolbar-title>
-                <strong>{{ manga.title }}</strong>
-              </q-toolbar-title>
-              <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
-            </q-card-section>
-          </q-card-section>
-        </q-card>
-      </q-toolbar>
-    </q-header>
-    <q-page padding>
-      <div class="row">
-        <div class="text-h6">Liste des chapitres</div>
-      </div>
-      <div class="row q-col-gutter-sm">
-        <div class="col-xs-4 col-md-3" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
-          <q-card>
-            <q-card-section>
-              <div class="col text-center">
-                <div>{{ chapter.number }}</div>
-                <i>{{ chapterDateDiff(chapter.date) }}</i>
-              </div>
+  <keep-alive>
+    <div>
+      <q-header>
+        <q-toolbar class="bg-cyan-9">
+          <q-card flat class="bg-cyan-9">
+            <q-card-section horizontal class="no-padding">
+              <q-img class="col-xs-3" :src="mangaImage" contain style="max-height: 100px; max-width: 100px;" />
+              <q-card-section>
+                <q-toolbar-title>
+                  <strong>{{ manga.title }}</strong>
+                </q-toolbar-title>
+                <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
+                <q-btn flat round dense :icon="faroviteIcon" @click="addFavorite(manga)" />
+              </q-card-section>
             </q-card-section>
           </q-card>
+        </q-toolbar>
+      </q-header>
+      <q-page padding>
+        <div class="row">
+          <div class="text-h6">Liste des chapitres</div>
         </div>
-      </div>
-    </q-page>
-  </div>
+        <div class="row q-col-gutter-sm">
+          <div class="col-xs-4 col-md-3" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
+            <q-card>
+              <q-card-section>
+                <div class="col text-center">
+                  <div>{{ chapter.number }}</div>
+                  <i>{{ chapterDateDiff(chapter.date) }}</i>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </q-page>
+    </div>
+  </keep-alive>
 </template>
 <script>
 import { getManga } from '@/utils/api'
 import { todayDiff, dateFormatIso } from '@/utils/date'
 import { getMangaImgUrl } from '@/utils/manga'
+import { createNamespacedHelpers } from 'vuex'
+const storeFavorites = createNamespacedHelpers('favorites')
 
 export default {
   name: 'DetailManga',
   data () {
+    let self = this
     return {
+      mangaId: self.$route.params.id,
       manga: {},
       chapters: [],
       sortDesc: true
     }
   },
   async created () {
-    this.manga = await getManga(this.$route.params.id)
-    this.chapters = this.manga.chapters.map(c => {
+    this.manga = await getManga(this.mangaId)
+    this.manga.id = this.mangaId
+    this.chapters = this.manga.chapters.filter(c => Number.isInteger(c[0])).map(c => {
       return {
         id: c[3],
         title: c[2],
@@ -61,14 +69,18 @@ export default {
   },
   methods: {
     goToChapter (id) {
-      this.$router.push({ name: 'chapter', params: { id: id, mangaId: this.$route.params.id } })
+      this.$router.push({ name: 'chapter', params: { id: id, mangaId: this.mangaId } })
     },
     chapterDateDiff2 (d) {
       return todayDiff(new Date(d * 1000))
     },
     chapterDateDiff (d) {
       return dateFormatIso(d * 1000)
-    }
+    },
+    ...storeFavorites.mapMutations({
+      addFavorite: 'addFavorite'
+    }),
+    ...storeFavorites.mapGetters(['getFavorite'])
   },
   computed: {
     lastUpdate () {
@@ -82,6 +94,9 @@ export default {
     },
     mangaImage () {
       return getMangaImgUrl(this.manga.image)
+    },
+    faroviteIcon () {
+      return this.getFavorite()(this.mangaId) ? 'fas fa-heart' : 'far fa-heart'
     }
   }
 }
