@@ -5,6 +5,7 @@ import Chapter from 'pages/Chapter'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
 import FavoritesManga from 'pages/FavoritesManga'
+import userConfig from 'pages/userConfig'
 
 export const ROUTE_NAME_MANGA = 'manga'
 
@@ -32,6 +33,11 @@ const routes = [
         path: 'favorites',
         name: 'favorites',
         component: FavoritesManga
+      },
+      {
+        path: 'userConfig',
+        name: 'userConfig',
+        component: userConfig
       }
     ]
   },

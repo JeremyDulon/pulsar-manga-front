@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 // we first import the module
 import favorites from './favorites'
+import userConfig from './userConfig'
 
 Vue.use(Vuex)
 
@@ -10,7 +11,8 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       // then we reference it
-      favorites
+      favorites,
+      userConfig
     },
 
     // enable strict mode (adds overhead!)
@@ -29,6 +31,10 @@ export default function (/* { ssrContext } */) {
     module.hot.accept(['./favorites'], () => {
       const newFavorites = require('./favorites').default
       Store.hotUpdate({ modules: { favorites: newFavorites } })
+    })
+    module.hot.accept(['./userConfig'], () => {
+      const newuserconfig = require('./userConfig').default
+      Store.hotUpdate({ modules: { userconfig: newuserconfig } })
     })
   }
 

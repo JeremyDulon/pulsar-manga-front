@@ -7,6 +7,6 @@ export const getFavorites = (state) => {
   return state.favorites
 }
 
-export const getFavorite = (state, favorites) => (id) => {
-  return _.find(favorites, (_m) => _m.id === id)
+export const getFavorite = (state) => (id) => {
+  return _.find(state.favorites, (_m) => _m === id)
 }

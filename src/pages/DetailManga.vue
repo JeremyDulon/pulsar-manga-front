@@ -96,7 +96,7 @@ export default {
       return getMangaImgUrl(this.manga.image)
     },
     faroviteIcon () {
-      return this.getFavorite()(this.mangaId) ? 'fas fa-heart' : 'far fa-heart'
+      return this.getFavorite()(this.manga.id) ? 'fas fa-heart' : 'far fa-heart'
     }
   }
 }

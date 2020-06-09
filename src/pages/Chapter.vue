@@ -14,8 +14,9 @@
                   animated
                   swipeable
                   fullscreen
-                  transition-next="slide-left"
-                  transition-prev="slide-right"
+                  :vertical="vertical"
+                  :transition-next="transitionNext"
+                  :transition-prev="transitionPrev"
                   ref="chapterSlider">
         <q-carousel-slide v-for="image in images"
                           :key="image.number"
@@ -40,6 +41,8 @@
 <script>
 import { getChapter, getManga } from '@/utils/api'
 import { CDN_BASE_URL } from '@/consts/api'
+import { createNamespacedHelpers } from 'vuex'
+const storeUserConfig = createNamespacedHelpers('userConfig')
 
 export default {
   name: 'ChapterPage',
@@ -53,6 +56,13 @@ export default {
       lastNumber: null,
       navigation: false
     }
+  },
+  computed: {
+    ...storeUserConfig.mapGetters({
+      transitionNext: 'getTransitionNext',
+      transitionPrev: 'getTransitionPrev',
+      vertical: 'getVertical'
+    })
   },
   async created () {
     window.addEventListener('keyup', (e) => {
