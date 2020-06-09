@@ -1,7 +1,7 @@
 export default function () {
   return {
-    transitionNext: 'slide-left',
-    transitionPrev: 'slide-right',
+    transitionNext: 'left',
+    transitionPrev: 'right',
     vertical: 'false'
   }
 }

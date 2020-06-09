@@ -15,8 +15,9 @@
                   swipeable
                   fullscreen
                   :vertical="vertical"
-                  :transition-next="transitionNext"
-                  :transition-prev="transitionPrev"
+                  :transition-next="'slide-' + transitionNext"
+                  :transition-prev="'slide-' + transitionPrev"
+                  :id="'slide-' + transitionNext"
                   ref="chapterSlider">
         <q-carousel-slide v-for="image in images"
                           :key="image.number"
@@ -47,6 +48,8 @@ const storeUserConfig = createNamespacedHelpers('userConfig')
 export default {
   name: 'ChapterPage',
   data () {
+    console.log(this.$store.state.userConfig.transitionNext)
+    console.log(this.$store.state.userConfig.transitionPrev)
     return {
       manga: {},
       chapter: {},
