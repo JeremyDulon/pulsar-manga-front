@@ -11,33 +11,33 @@
     </q-header>
     <q-page>
       <q-carousel v-model="currentImage"
-                  animated
-                  swipeable
-                  fullscreen
-                  :vertical="vertical"
-                  :transition-next="'slide-' + transitionNext"
-                  :transition-prev="'slide-' + transitionPrev"
-                  :id="'slide-' + transitionNext"
-                  ref="chapterSlider">
-        <q-carousel-slide v-for="image in images"
-                          :key="image.number"
-                          :name="image.number"
-                          :img-src="chapterImage(image.src)"
-                          :draggable="false"
-                          class="chapter-slide"
-                          @click="navigation = !navigation"/>
-        <template v-slot:control v-if="navigation">
-          <q-carousel-control position="bottom" :offset="[18, 18]">
-            <q-slider v-model="currentImage"
-                      label
-                      label-always
-                      :min="firstNumber"
-                      :max="lastNumber" />
-          </q-carousel-control>
-        </template>
-      </q-carousel>
-    </q-page>
-  </div>
+      animated
+      swipeable
+      fullscreen
+      :vertical="(vertical == 'true') ? true : false"
+      :transition-next="'slide-' + transitionNext"
+      :transition-prev="'slide-' + transitionPrev"
+      :id="'slide-' + transitionNext"
+      ref="chapterSlider">
+      <q-carousel-slide v-for="image in images"
+      :key="image.number"
+      :name="image.number"
+      :img-src="chapterImage(image.src)"
+      :draggable="false"
+      class="chapter-slide"
+      @click="navigation = !navigation"/>
+      <template v-slot:control v-if="navigation">
+        <q-carousel-control position="bottom" :offset="[18, 18]">
+          <q-slider v-model="currentImage"
+          label
+          label-always
+          :min="firstNumber"
+          :max="lastNumber" />
+        </q-carousel-control>
+      </template>
+    </q-carousel>
+  </q-page>
+</div>
 </template>
 <script>
 import { getChapter, getManga } from '@/utils/api'
@@ -48,8 +48,6 @@ const storeUserConfig = createNamespacedHelpers('userConfig')
 export default {
   name: 'ChapterPage',
   data () {
-    console.log(this.$store.state.userConfig.transitionNext)
-    console.log(this.$store.state.userConfig.transitionPrev)
     return {
       manga: {},
       chapter: {},
@@ -103,18 +101,19 @@ export default {
       return CDN_BASE_URL + path
     },
     backToManga () {
-      this.$router.push({ name: 'manga', params: { id: this.mangaId } })
+      console.log(this.$route.params.mangaId)
+      this.$router.push({ name: 'manga', params: { id: this.$route.params.mangaId } })
     }
   }
 }
 </script>
 
 <style>
-  .chapter-slide {
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: contain;
-    background-position-y: center;
-    background-color: #111111;
-  }
+.chapter-slide {
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: contain;
+  background-position-y: center;
+  background-color: #111111;
+}
 </style>

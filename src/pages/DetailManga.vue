@@ -5,6 +5,7 @@
         <q-toolbar class="bg-cyan-9">
           <q-card flat class="bg-cyan-9">
             <q-card-section horizontal class="no-padding">
+               <q-btn size="lg" icon="fa fa-angle-left" @click="goToHome" />
               <q-img class="col-xs-3" :src="mangaImage" contain style="max-height: 100px; max-width: 100px;" />
               <q-card-section>
                 <q-toolbar-title>
@@ -68,6 +69,10 @@ export default {
     })
   },
   methods: {
+    goToHome () {
+      this.$router.push({ name: 'home' })
+    },
+
     goToChapter (id) {
       this.$router.push({ name: 'chapter', params: { id: id, mangaId: this.mangaId } })
     },

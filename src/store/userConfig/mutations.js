@@ -5,6 +5,7 @@ export function someMutation (state) {
 
 export const setVertical = (state, vertical) => {
   state.vertical = vertical
+  setVerticalTransition(state)
   return state.vertical
 }
 
@@ -14,19 +15,34 @@ export const setTransitionPrev = (state, transition) => {
 
 export const setTransitionNext = (state, transition) => {
   state.transitionPrev = state.transitionNext
+  state.transitionNext = transition
+  setTransition(state)
+  return state.transitionNext
+}
+
+function setTransition (state) {
   if (state.vertical === 'false') {
-    if (transition === 'right') {
+    if (state.transitionNext === 'right') {
       state.transitionPrev = 'left'
     } else {
       state.transitionPrev = 'right'
     }
   } else {
-    if (transition === 'up') {
+    if (state.transitionNext === 'up') {
       state.transitionPrev = 'down'
     } else {
       state.transitionPrev = 'up'
     }
   }
-  state.transitionNext = transition
-  return state.transitionNext
+}
+
+function setVerticalTransition (state) {
+  console.log(state.vertical)
+  if (state.vertical === 'false') {
+    state.transitionNext = 'left'
+    state.transitionPrev = 'right'
+  } else {
+    state.transitionNext = 'down'
+    state.transitionPrev = 'up'
+  }
 }
