@@ -1,7 +1,6 @@
 export default function () {
   return {
-    transitionNext: 'left',
-    transitionPrev: 'right',
-    vertical: 'false'
+    vertical: false,
+    read: 'ltr'
   }
 }

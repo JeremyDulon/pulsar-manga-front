@@ -5,7 +5,7 @@ import Chapter from 'pages/Chapter'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
 import FavoritesManga from 'pages/FavoritesManga'
-import userConfig from 'pages/userConfig'
+import userConfig from 'pages/UserConfig'
 
 export const ROUTE_NAME_MANGA = 'manga'
 

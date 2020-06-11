@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import localStoragePlugin from '@/store/plugins/localStoragePlugin'
 
 // we first import the module
 import favorites from './favorites'
@@ -17,7 +18,8 @@ export default function (/* { ssrContext } */) {
 
     // enable strict mode (adds overhead!)
     // for dev mode only
-    strict: process.env.DEV
+    strict: process.env.DEV,
+    plugins: [localStoragePlugin]
   })
 
   /*

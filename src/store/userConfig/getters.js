@@ -3,12 +3,8 @@ export function someGetter (state) {
 }
 */
 
-export const getTransitionNext = (state) => {
-  return state.transitionNext
-}
-
-export const getTransitionPrev = (state) => {
-  return state.transitionPrev
+export const getRead = (state) => {
+  return state.read
 }
 
 export const getVertical = (state) => {
