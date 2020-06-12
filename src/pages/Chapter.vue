@@ -18,7 +18,6 @@
                   :transition-next="trNext"
                   :transition-prev="trPrev"
                   :vertical="vertical"
-                  :id="'slide-' + readMode"
                   ref="chapterSlider">
         <q-carousel-slide v-for="image in orderedImages"
                           :key="image.number"
