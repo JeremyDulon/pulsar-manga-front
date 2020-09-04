@@ -3,7 +3,7 @@ import { STORAGE_KEY } from '@/consts/app'
 const storageState = JSON.parse(window.localStorage.getItem(STORAGE_KEY))
 
 /**
- * Récèpère l'état depuis le local storage s'il est disponible et le merge avec l'état par défaut
+ * Récupère l'état depuis le local storage s'il est disponible et le merge avec l'état par défaut
  *
  * @param {String} key - La clé du module
  * @param {Object} defaultState - L'état par défaut

@@ -9,7 +9,8 @@
         <q-icon v-else name="clear" class="cursor-pointer" @click="text = ''" />
       </template>
     </q-input>
-    <manga-list :manga-list="filteredList" />
+    <manga-list v-if="filteredList" :manga-list="filteredList" />
+
   </q-page>
 </template>
 

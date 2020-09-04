@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import 'lodash'
 export default {
   name: 'App'
 }

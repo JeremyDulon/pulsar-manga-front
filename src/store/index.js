@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import localStoragePlugin from '@/store/plugins/localStoragePlugin'
+import localStoragePlugin, { getDefaultState } from '@/store/plugins/localStoragePlugin'
 
 // we first import the module
 import favorites from './favorites'
@@ -10,6 +10,15 @@ Vue.use(Vuex)
 
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
+    state: {
+      userConfig: getDefaultState(
+        'userConfig',
+        {
+          vertical: false,
+          read: 'rtl'
+        }
+      )
+    },
     modules: {
       // then we reference it
       favorites,
@@ -29,16 +38,15 @@ export default function (/* { ssrContext } */) {
     get into our production build (and it shouldn't).
   */
 
-  if (process.env.DEV && module.hot) {
-    module.hot.accept(['./favorites'], () => {
+  if (module.hot) {
+    module.hot.accept(['./favorites', './userConfig'], () => {
       const newFavorites = require('./favorites').default
-      Store.hotUpdate({ modules: { favorites: newFavorites } })
-    })
-    module.hot.accept(['./userConfig'], () => {
       const newuserconfig = require('./userConfig').default
-      Store.hotUpdate({ modules: { userconfig: newuserconfig } })
+      Store.hotUpdate({ modules: {
+        favorites: newFavorites,
+        userConfig: newuserconfig
+      } })
     })
   }
-
   return Store
 }

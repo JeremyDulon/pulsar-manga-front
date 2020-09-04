@@ -17,9 +17,10 @@ export default {
     }
   },
   async created () {
-    this.mangaList = await getFilteredList((manga) => {
-      return manga.h > 40000000
-    })
+    // this.mangaList = await getFilteredList((manga) => {
+    //   return manga.h > 40000000
+    // })
+    this.mangaList = await getFilteredList()
   }
 }
 </script>

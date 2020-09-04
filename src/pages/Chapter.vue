@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn size="lg" icon="fa fa-angle-left" color="black" @click="backToManga"  />
         <q-toolbar-title>
-          <div class="text-h6">{{ currentImage+1 }}/{{ lastNumber+1 }} {{ manga.title }} {{ chapter.number }}: {{ chapter.title }}</div>
+          <div class="text-h6">{{ currentImage }}/{{ lastNumber }} {{ chapter.number }}: {{ chapter.title }}</div>
         </q-toolbar-title>
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
@@ -22,7 +22,7 @@
         <q-carousel-slide v-for="image in orderedImages"
                           :key="image.number"
                           :name="image.number"
-                          :img-src="image.src"
+                          :img-src="image.file && image.file.url"
                           :draggable="false"
                           class="chapter-slide"
                           @click="navigation = !navigation"/>
@@ -30,7 +30,7 @@
           <q-carousel-control position="bottom" :offset="[18, 18]">
             <q-slider v-model="currentImage"
                       label
-                      :label-value="currentImage + 1"
+                      :label-value="currentImage"
                       label-always
                       :min="firstNumber"
                       :max="lastNumber" />
@@ -49,7 +49,6 @@
 </template>
 <script>
 import { getChapter, getManga } from '@/utils/api'
-import { CDN_BASE_URL } from '@/consts/api'
 import { createNamespacedHelpers } from 'vuex'
 import UserConfig from 'pages/UserConfig'
 const storeUserConfig = createNamespacedHelpers('userConfig')
@@ -61,14 +60,11 @@ export default {
     return {
       manga: {},
       chapter: {},
-      images: [],
-      currentImage: 0,
+      currentImage: 1,
       firstNumber: null,
       lastNumber: null,
-      navigation: true,
-      showSettings: false,
-      trNext: 'slide-left',
-      trPrev: 'slide-right'
+      navigation: false,
+      showSettings: false
     }
   },
   computed: {
@@ -77,40 +73,54 @@ export default {
       vertical: 'getVertical'
     }),
     orderedImages () {
-      return _.orderBy(this.images, ['number'], [
-        this.read === 'ltr' ? 'asc' : 'desc'
+      return _.orderBy(this.chapter.chapter_pages, ['number'], [
+        this.read === 'ltr' || this.read === 'ud' ? 'asc' : 'desc'
       ])
+    },
+    trNext () {
+      return this.vertical ? 'slide-up' : 'slide-left'
+    },
+    trPrev () {
+      return this.vertical ? 'slide-down' : 'slide-right'
     }
   },
+  destroyed () {
+    document.addEventListener('keyup', this.handleArrows)
+  },
   async created () {
-    this.manga = await getManga(this.$route.params.mangaId)
-    this.manga.chapters = this.manga.chapters.map(c => {
-      return {
-        id: c[3],
-        title: c[2],
-        number: c[0],
-        date: c[1]
-      }
-    })
-    let chapter = await getChapter(this.$route.params.id)
-    this.chapter = _.find(this.manga.chapters, (c) => c.id === this.$route.params.id)
-    this.images = chapter.images.map(i => {
-      return {
-        number: i[0],
-        src: this.chapterImage(i[1]),
-        h: i[2],
-        w: i[3]
-      }
-    })
-    this.firstNumber = _.minBy(this.images, (i) => i.number).number
-    this.lastNumber = _.maxBy(this.images, (i) => i.number).number
+    document.addEventListener('keyup', this.handleArrows)
+    if (this.$route.params.manga) {
+      this.manga = await getManga(this.$route.params.manga)
+    }
+    this.chapter = await getChapter(this.$route.params.id)
+    this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
+    this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
   },
   methods: {
-    chapterImage (path) {
-      return CDN_BASE_URL + path
+    handleArrows (e) {
+      const key = e.key
+      if (
+        (this.vertical && key === 'ArrowUp' && this.read === 'ud') ||
+        (this.vertical && key === 'ArrowDown' && this.read === 'du') ||
+        (!this.vertical && key === 'ArrowLeft' && this.read === 'ltr') ||
+        (!this.vertical && key === 'ArrowRight' && this.read === 'rtl')
+      ) { this.goToPrev() }
+
+      if (
+        (this.vertical && key === 'ArrowUp' && this.read === 'du') ||
+        (this.vertical && key === 'ArrowDown' && this.read === 'ud') ||
+        (!this.vertical && key === 'ArrowLeft' && this.read === 'rtl') ||
+        (!this.vertical && key === 'ArrowRight' && this.read === 'ltr')
+      ) { this.goToNext() }
+    },
+    goToPrev () {
+      this.currentImage = this.currentImage === this.firstNumber ? this.currentImage : this.currentImage - 1
+    },
+    goToNext () {
+      this.currentImage = this.currentImage === this.lastNumber ? this.currentImage : this.currentImage + 1
     },
     backToManga () {
-      this.$router.push({ name: 'manga', params: { id: this.$route.params.mangaId } })
+      this.$router.push({ name: 'manga', params: { slug: this.$route.params.manga } })
     }
   }
 }

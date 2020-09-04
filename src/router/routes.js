@@ -20,7 +20,7 @@ const routes = [
         component: Index
       },
       {
-        path: 'manga/:id',
+        path: 'manga/:slug',
         name: 'manga',
         component: DetailManga
       },

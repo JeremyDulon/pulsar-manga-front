@@ -1,3 +1,3 @@
-export const API_BASE_URL = 'https://www.mangaeden.com/api/'
-
-export const CDN_BASE_URL = 'https://cdn.mangaeden.com/mangasimg/'
+// export const API_BASE_URL = 'http://localhost:8000/api/'
+export const API_BASE_URL = 'http://235334d2b9fd.ngrok.io/api/'
+// export const API_BASE_URL = 'http://manga.wip/api/'
