@@ -1,3 +1,4 @@
-// export const API_BASE_URL = 'http://localhost:8000/api/'
-export const API_BASE_URL = 'http://235334d2b9fd.ngrok.io/api/'
-// export const API_BASE_URL = 'http://manga.wip/api/'
+export const API_BASE_URL = 'https://localhost:8000/'
+// export const API_BASE_URL = 'https://409665e25249.ngrok.io/'
+// export const API_BASE_URL = 'http://manga.wip/'
+export const API_ROUTE = 'api/'

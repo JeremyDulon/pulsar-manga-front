@@ -2,7 +2,9 @@
   <div>
     <q-header v-if="navigation" class="bg-black" style="z-index: 9999">
       <q-toolbar>
-        <q-btn size="lg" icon="fa fa-angle-left" color="black" @click="backToManga"  />
+        <q-btn
+          v-go-back="{ name: 'manga', params: { slug: $route.params.manga } }"
+          size="lg" icon="fa fa-angle-left" color="black" />
         <q-toolbar-title>
           <div class="text-h6">{{ currentImage }}/{{ lastNumber }} {{ chapter.number }}: {{ chapter.title }}</div>
         </q-toolbar-title>
@@ -48,7 +50,7 @@
   </div>
 </template>
 <script>
-import { getChapter, getManga } from '@/utils/api'
+import { getChapter } from '@/utils/api'
 import { createNamespacedHelpers } from 'vuex'
 import UserConfig from 'pages/UserConfig'
 const storeUserConfig = createNamespacedHelpers('userConfig')
@@ -58,7 +60,7 @@ export default {
   components: { UserConfig },
   data () {
     return {
-      manga: {},
+      mangaSlug: null,
       chapter: {},
       currentImage: 1,
       firstNumber: null,
@@ -88,10 +90,10 @@ export default {
     document.addEventListener('keyup', this.handleArrows)
   },
   async created () {
-    document.addEventListener('keyup', this.handleArrows)
     if (this.$route.params.manga) {
-      this.manga = await getManga(this.$route.params.manga)
+      this.mangaSlug = this.$route.params.manga
     }
+    document.addEventListener('keyup', this.handleArrows)
     this.chapter = await getChapter(this.$route.params.id)
     this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
     this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number

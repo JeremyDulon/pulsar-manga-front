@@ -25,3 +25,4 @@ npm run build:android
 
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore $keystore dist/cordova/android/apk/release/app-release-unsigned.apk pulsar-manga
 exec $zalign -v 4 ./dist/cordova/android/apk/release/app-release-unsigned.apk ./dist/cordova/android/apk/release/pulsar-manga.apk
+cp ./dist/cordova/android/apk/release/pulsar-manga.apk ./pulsar-manga.apk

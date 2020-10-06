@@ -49,7 +49,9 @@ module.exports = function (ctx) {
       cssAddon: true,
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Notify'
+      ]
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie

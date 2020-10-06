@@ -1,11 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import localStoragePlugin, { getDefaultState } from '@/store/plugins/localStoragePlugin'
+import modules from './modules'
 
 // we first import the module
-import favorites from './favorites'
-import userConfig from './userConfig'
-
 Vue.use(Vuex)
 
 export default function (/* { ssrContext } */) {
@@ -19,11 +17,7 @@ export default function (/* { ssrContext } */) {
         }
       )
     },
-    modules: {
-      // then we reference it
-      favorites,
-      userConfig
-    },
+    modules,
 
     // enable strict mode (adds overhead!)
     // for dev mode only
@@ -39,13 +33,9 @@ export default function (/* { ssrContext } */) {
   */
 
   if (module.hot) {
-    module.hot.accept(['./favorites', './userConfig'], () => {
-      const newFavorites = require('./favorites').default
-      const newuserconfig = require('./userConfig').default
-      Store.hotUpdate({ modules: {
-        favorites: newFavorites,
-        userConfig: newuserconfig
-      } })
+    module.hot.accept(['./modules'], () => {
+      const modules = require('./modules').default
+      Store.hotUpdate({ modules })
     })
   }
   return Store

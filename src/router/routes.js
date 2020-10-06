@@ -5,7 +5,8 @@ import Chapter from 'pages/Chapter'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
 import FavoritesManga from 'pages/FavoritesManga'
-import userConfig from 'pages/UserConfig'
+import UserConfig from 'pages/UserConfig'
+import AddSource from 'pages/AddSource'
 
 export const ROUTE_NAME_MANGA = 'manga'
 
@@ -35,9 +36,14 @@ const routes = [
         component: FavoritesManga
       },
       {
-        path: 'userConfig',
+        path: 'user-config',
         name: 'userConfig',
-        component: userConfig
+        component: UserConfig
+      },
+      {
+        path: 'add-source',
+        name: 'addSource',
+        component: AddSource
       }
     ]
   },
