@@ -13,7 +13,7 @@
             <q-item-label class="text-subtitle2">Todo--Auteur</q-item-label>
             <q-item-label class="text-subtitle2">{{ mangaPlatform.views_count }} views</q-item-label>
           </q-toolbar-title>
-          <q-btn flat round dense icon="fas fa-server" @click="selectPlatform = !selectPlatform"/>
+          <q-btn flat round dense icon="fas fa-server" @click="selectPlatformDialog = !selectPlatformDialog"/>
           <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
           <!-- TODO: Add favorite (to user) -->
           <q-btn flat round dense :icon="faroviteIcon" @click="addFavorite(manga)" />
@@ -52,6 +52,9 @@
       </q-page>
       <q-dialog v-model="selectPlatformDialog">
         <q-card>
+          <q-card-section>
+            <div class="text-h6">Change platform</div>
+          </q-card-section>
           <q-card-section>
             <div>
               <q-list>
@@ -111,7 +114,7 @@ export default {
     },
     changePlatform (id) {
       this.mangaPlatform = this.manga.platforms[id]
-      this.selectPlatform = false
+      this.selectPlatformDialog = false
     },
     goToHome () {
       this.$router.push({ name: 'home' })
@@ -141,7 +144,8 @@ export default {
       return 'fas fa-' + (this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-down')
     },
     faroviteIcon () {
-      return this.getFavorite()(this.manga.id) ? 'fas fa-heart' : 'far fa-heart'
+      return 'far fa-heart'
+      // return this.getFavorite()(this.manga.id) ? 'fas fa-heart' : 'far fa-heart'
     }
   }
 }

@@ -8,7 +8,23 @@
     <q-input v-if="isLogin || isRegister || isForgot"
              v-model="value.username"
              type="text"
-             label="Username" class="col-xs-12" />
+             label="Username" class="col-xs-12">
+      <template #append>
+        <q-btn round flat icon="fa fa-chevron-down" tabindex="-1" @click.stop>
+          <q-menu fit>
+            <q-list>
+              <q-item v-for="login in prevLogin" :key="login"
+                      v-close-popup
+                      clickable @click="$set(value, 'username', login)">
+                <q-item-section>
+                  <q-item-label>{{ login }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </template>
+    </q-input>
     <pulsar-password v-if="!isForgot" v-model="value.password"
                   :label="`${isReset ? 'New p' : 'P'}assword` " type="password"
                   class="col-xs-12">
@@ -53,6 +69,9 @@ export default {
     }
   },
   computed: {
+    ...storeUser.mapState({
+      prevLogin: 'prevLogin'
+    }),
     isLogin () {
       return this.type === 'login'
     },

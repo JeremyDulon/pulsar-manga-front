@@ -7,8 +7,17 @@ import TabsLayout from 'layouts/TabsLayout'
 import FavoritesManga from 'pages/FavoritesManga'
 import UserConfig from 'pages/UserConfig'
 import AddSource from 'pages/AddSource'
+import Login from 'pages/Login'
 
-export const ROUTE_NAME_MANGA = 'manga'
+import store from '@/store'
+
+const isAdmin = (to, from, next) => {
+  if (store.getters['user/isAdmin']) {
+    next()
+    return
+  }
+  next('/')
+}
 
 const routes = [
   {
@@ -43,6 +52,7 @@ const routes = [
       {
         path: 'add-source',
         name: 'addSource',
+        beforeEnter: isAdmin,
         component: AddSource
       }
     ]
@@ -55,6 +65,17 @@ const routes = [
         path: ':id',
         name: 'chapter',
         component: Chapter
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: NoLayout,
+    children: [
+      {
+        path: '',
+        name: 'login',
+        component: Login
       }
     ]
   }

@@ -15,3 +15,9 @@ export const USER_TOKEN_REFRESH = 'refreshToken'
  * @type {string}
  */
 export const USER_LOGOUT = 'logout'
+
+/**
+ * Permet de récupérer l'utilisateur courant
+ * @type {string}
+ */
+export const USER_FETCH = 'fetchUser'

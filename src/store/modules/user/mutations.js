@@ -5,7 +5,7 @@ export default {
     state.authToken = token
   },
   [mutationTypes.USER_SET_USER]: (state, user) => {
-    state.utilisateur = user
+    state.user = user
   },
   [mutationTypes.USER_ADD_PREV_LOGIN]: (state, { username }) => {
     if (state.prevLogin.indexOf(username) === -1) {
