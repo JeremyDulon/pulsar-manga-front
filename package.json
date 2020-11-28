@@ -12,6 +12,7 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "dev:android": "quasar dev -m cordova -T android",
+    "build": "quasar build",
     "build:android": "quasar build -m cordova -T android"
   },
   "dependencies": {
