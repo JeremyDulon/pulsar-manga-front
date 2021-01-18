@@ -43,7 +43,7 @@ export default {
       }
     }
   },
-  [actionTypes.USER_FETCH]: async ({ commit, dispatch }) => {
+  [actionTypes.USER_FETCH]: async ({ commit }) => {
     const r = await network.get('api/user')
     commit(mutationTypes.USER_SET_USER, r.data)
   },
