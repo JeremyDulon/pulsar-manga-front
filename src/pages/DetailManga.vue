@@ -123,7 +123,11 @@ export default {
       this.$router.push({ name: 'home' })
     },
     goToChapter (id) {
-      this.$router.push({ name: 'chapter', params: { id: id, manga: this.manga.slug } })
+      let params = { id: id, manga: this.manga.slug }
+      if (this.stateFavorite && this.stateFavorite.chapter === id && this.stateFavorite.page) {
+        params.page = this.stateFavorite.page
+      }
+      this.$router.push({ name: 'chapter', params: params })
     },
     chapterDateDiff2 (d) {
       return todayDiff(d)

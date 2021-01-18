@@ -63,7 +63,7 @@ export default {
     return {
       mangaSlug: null,
       chapter: {},
-      currentImage: 0,
+      currentImage: this.$route.params.page,
       firstNumber: null,
       lastNumber: null,
       navigation: false,
@@ -96,7 +96,9 @@ export default {
     }
     document.addEventListener('keyup', this.handleArrows)
     this.chapter = await getChapter(this.$route.params.id)
-    this.currentImage = 1
+    if (!this.$route.params.page) {
+      this.currentImage = 1
+    }
     this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
     this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
   },
