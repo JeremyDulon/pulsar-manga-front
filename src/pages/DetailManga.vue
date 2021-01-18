@@ -10,13 +10,13 @@
           <q-img class="col-xs-3" :src="manga.image && manga.image.url" contain style="max-height: 100px; max-width: 100px;" />
           <q-toolbar-title>
             <q-item-label class="text-h6">{{ manga.title }}</q-item-label>
-            <q-item-label class="text-subtitle2">Todo--Auteur</q-item-label>
+            <q-item-label class="text-subtitle2">{{ mangaPlatform.author }}</q-item-label>
             <q-item-label class="text-subtitle2">{{ mangaPlatform.views_count }} views</q-item-label>
           </q-toolbar-title>
           <q-btn flat round dense icon="fas fa-server" @click="selectPlatformDialog = !selectPlatformDialog"/>
           <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
           <!-- TODO: Add favorite (to user) -->
-          <q-btn flat round dense :icon="faroviteIcon" @click="addFavorite(manga)" />
+          <q-btn flat round dense :icon="favoriteIcon" @click="addFavorite(mangaPlatform.id)" />
         </q-toolbar>
       </q-header>
       <q-header v-if="lightHeader">
@@ -30,7 +30,7 @@
           </q-toolbar-title>
           <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
           <!-- TODO: Add favorite (to user) -->
-          <q-btn flat round dense :icon="faroviteIcon" @click="addFavorite(manga)" />
+          <q-btn flat round dense :icon="faroviteIcon" @click="addFavorite(manga.slug)" />
         </q-toolbar>
       </q-header>
       <q-page padding>
@@ -39,7 +39,7 @@
         </div>
         <div class="row q-col-gutter-sm">
           <div class="col-xs-3 col-sm-2 col-lg-1" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
-            <q-card>
+            <q-card :dark="stateFavorite && stateFavorite.chapter === chapter.id">
               <q-card-section>
                 <div class="col">
                   <div>Ch. {{ chapter.number }}</div>
@@ -87,7 +87,7 @@ import { getManga } from '@/utils/api'
 import { todayDiff, dateFormatIso } from '@/utils/date'
 import { createNamespacedHelpers } from 'vuex'
 import FormSource from 'components/forms/FormSource'
-const storeFavorites = createNamespacedHelpers('favorites')
+const storeUser = createNamespacedHelpers('user')
 
 export default {
   name: 'DetailManga',
@@ -105,6 +105,9 @@ export default {
     }
   },
   async created () {
+    if (!this.mangaSlug) {
+      this.goToHome()
+    }
     this.manga = await getManga(this.mangaSlug)
     this.mangaPlatform = this.manga.platforms[0]
   },
@@ -128,10 +131,12 @@ export default {
     chapterDateDiff (d) {
       return dateFormatIso(d)
     },
-    ...storeFavorites.mapMutations({
+    ...storeUser.mapActions({
       addFavorite: 'addFavorite'
     }),
-    ...storeFavorites.mapGetters(['getFavorite'])
+    ...storeUser.mapGetters({
+      getFavorite: 'getFavorite'
+    })
   },
   computed: {
     lastUpdate () {
@@ -143,9 +148,11 @@ export default {
     sortIcon () {
       return 'fas fa-' + (this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-down')
     },
-    faroviteIcon () {
-      return 'far fa-heart'
-      // return this.getFavorite()(this.manga.id) ? 'fas fa-heart' : 'far fa-heart'
+    favoriteIcon () {
+      return this.getFavorite()(this.manga.slug) ? 'fas fa-heart' : 'far fa-heart'
+    },
+    stateFavorite () {
+      return this.$store.state.user.user.favorites.find(favorite => favorite.slug === this.manga.slug)
     }
   }
 }

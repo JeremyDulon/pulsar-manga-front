@@ -3,7 +3,7 @@
     <q-header v-if="navigation" class="bg-black" style="z-index: 9999">
       <q-toolbar>
         <q-btn
-          v-go-back="{ name: 'manga', params: { slug: $route.params.manga } }"
+          v-go-back="{ name: 'manga', params: { slug: mangaSlug } }"
           size="lg" icon="fa fa-angle-left" color="black" />
         <q-toolbar-title>
           <div class="text-h6">{{ currentImage }}/{{ lastNumber }} {{ chapter.number }}: {{ chapter.title }}</div>
@@ -54,6 +54,7 @@ import { getChapter } from '@/utils/api'
 import { createNamespacedHelpers } from 'vuex'
 import UserConfig from 'pages/UserConfig'
 const storeUserConfig = createNamespacedHelpers('userConfig')
+const storeUser = createNamespacedHelpers('user')
 
 export default {
   name: 'ChapterPage',
@@ -62,7 +63,7 @@ export default {
     return {
       mangaSlug: null,
       chapter: {},
-      currentImage: 1,
+      currentImage: 0,
       firstNumber: null,
       lastNumber: null,
       navigation: false,
@@ -95,10 +96,14 @@ export default {
     }
     document.addEventListener('keyup', this.handleArrows)
     this.chapter = await getChapter(this.$route.params.id)
+    this.currentImage = 1
     this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
     this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
   },
   methods: {
+    ...storeUser.mapActions({
+      readPage: 'readPage'
+    }),
     handleArrows (e) {
       const key = e.key
       if (
@@ -123,6 +128,19 @@ export default {
     },
     backToManga () {
       this.$router.push({ name: 'manga', params: { slug: this.$route.params.manga } })
+    },
+    updateReadPage: _.debounce(async function (pageNumber) {
+      await this.readPage({
+        chapter: this.chapter.id,
+        page: pageNumber
+      })
+    }, 1000)
+  },
+  watch: {
+    currentImage: {
+      handler: function (newVal) {
+        this.updateReadPage(newVal)
+      }
     }
   }
 }

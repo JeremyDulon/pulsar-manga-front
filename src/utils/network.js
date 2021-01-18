@@ -20,10 +20,11 @@ const handleApiError = (response) => {
   if (response.status === 503) {
     toast.warning('Serveur en maintenance')
   }
-  const error = _.get(response, ['data', 'error'])
+  const error = _.get(response, ['data', 'detail'])
   if (error) {
-    const message = error.message
+    const message = error.message || error
     if (error.code !== 0 || response.status >= 400) {
+      toast.negative(message)
       throw new Error(message)
     }
   }

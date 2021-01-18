@@ -21,3 +21,18 @@ export const USER_LOGOUT = 'logout'
  * @type {string}
  */
 export const USER_FETCH = 'fetchUser'
+
+/**
+ * Ajout d'un favori
+ */
+export const USER_ADD_FAVORITE = 'addFavorite'
+
+/**
+ * Lecture d'un chapitre
+ */
+export const USER_READ_CHAPTER = 'readChapter'
+
+/**
+ * Lecture d'une page
+ */
+export const USER_READ_PAGE = 'readPage'

@@ -6,10 +6,10 @@
 
 <script>
 import MangaList from 'components/list/MangaList'
-import { getFilteredList } from '@/utils/manga'
+import { getFavoritesList } from '@/utils/manga'
 
 import { createNamespacedHelpers } from 'vuex'
-const storeFavorites = createNamespacedHelpers('favorites')
+const storeUser = createNamespacedHelpers('user')
 
 export default {
   name: 'FavoritesManga',
@@ -20,12 +20,12 @@ export default {
     }
   },
   computed: {
-    ...storeFavorites.mapGetters({
+    ...storeUser.mapGetters({
       getFavorites: 'getFavorites'
     })
   },
   async created () {
-    this.mangaList = await getFilteredList((manga) => this.getFavorites.includes(manga.i))
+    this.mangaList = await getFavoritesList()
   }
 }
 </script>
