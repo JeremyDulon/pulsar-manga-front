@@ -61,8 +61,8 @@ module.exports = function (ctx) {
     build: {
       env: {
         API: ctx.dev
-          // ? '"https://localhost:8000/"'
-          ? '"https://manga.lykaos.fr/"'
+          ? '"https://localhost:8000/"'
+          // ? '"https://manga.lykaos.fr/"'
           : '"https://manga.lykaos.fr/"'
       },
       scopeHoisting: true,
