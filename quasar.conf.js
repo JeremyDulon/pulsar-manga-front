@@ -59,6 +59,12 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      env: {
+        API: ctx.dev
+          // ? '"https://localhost:8000/"'
+          ? '"https://manga.lykaos.fr/"'
+          : '"https://manga.lykaos.fr/"'
+      },
       scopeHoisting: true,
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       showProgress: true,
