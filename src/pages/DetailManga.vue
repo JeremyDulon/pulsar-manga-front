@@ -30,7 +30,7 @@
           </q-toolbar-title>
           <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
           <!-- TODO: Add favorite (to user) -->
-          <q-btn flat round dense :icon="faroviteIcon" @click="addFavorite(manga.slug)" />
+          <q-btn flat round dense :icon="favoriteIcon" @click="addFavorite(manga.slug)" />
         </q-toolbar>
       </q-header>
       <q-page padding>
@@ -109,7 +109,10 @@ export default {
       this.goToHome()
     }
     this.manga = await getManga(this.mangaSlug)
-    this.mangaPlatform = this.manga.platforms[0]
+    if (this.stateFavorite) {
+      let favorite = this.stateFavorite
+      this.mangaPlatform = this.manga.platforms.find(platform => platform.platform.id === favorite.id)
+    }
   },
   methods: {
     reveal (val) {
@@ -153,10 +156,10 @@ export default {
       return 'fas fa-' + (this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-down')
     },
     favoriteIcon () {
-      return this.getFavorite()(this.manga.slug) ? 'fas fa-heart' : 'far fa-heart'
+      return this.stateFavorite && this.stateFavorite.favorite ? 'fas fa-heart' : 'far fa-heart'
     },
     stateFavorite () {
-      return this.$store.state.user.user.favorites.find(favorite => favorite.slug === this.manga.slug)
+      return this.getFavorite()(this.manga.slug)
     }
   }
 }

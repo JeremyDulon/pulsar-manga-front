@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-header v-if="navigation" class="bg-black" style="z-index: 9999">
+    <q-header v-if="navigation || (chapter.chapter_pages && !chapter.chapter_pages.length)" class="bg-black" style="z-index: 9999">
       <q-toolbar>
         <q-btn
           v-go-back="{ name: 'manga', params: { slug: mangaSlug } }"
@@ -12,7 +12,7 @@
       </q-toolbar>
     </q-header>
     <q-page>
-      <q-carousel v-model="currentImage"
+      <q-carousel v-if="chapter.chapter_pages && chapter.chapter_pages.length" v-model="currentImage"
                   animated
                   swipeable
                   fullscreen
@@ -39,6 +39,13 @@
           </q-carousel-control>
         </template>
       </q-carousel>
+      <q-responsive v-else class="col" :ratio="1" style="max-height: 100%">
+        <div class="flex flex-center items-center">
+          <div class="">
+            <q-icon name="far fa-sad-tear" :size="'100px'" color="grey-4"/>
+          </div>
+        </div>
+      </q-responsive>
     </q-page>
     <q-dialog v-model="showSettings">
       <q-card>
@@ -65,7 +72,7 @@ export default {
       chapter: {},
       currentImage: this.$route.params.page,
       firstNumber: null,
-      lastNumber: null,
+      lastNumber: 'X',
       navigation: false,
       showSettings: false
     }
@@ -91,16 +98,16 @@ export default {
     document.addEventListener('keyup', this.handleArrows)
   },
   async created () {
-    if (this.$route.params.manga) {
-      this.mangaSlug = this.$route.params.manga
-    }
     document.addEventListener('keyup', this.handleArrows)
     this.chapter = await getChapter(this.$route.params.id)
     if (!this.$route.params.page) {
       this.currentImage = 1
     }
-    this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
-    this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
+    this.mangaSlug = this.chapter.manga
+    if (this.chapter.chapter_pages.length) {
+      this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
+      this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
+    }
   },
   methods: {
     ...storeUser.mapActions({
