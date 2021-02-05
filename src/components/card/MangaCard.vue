@@ -1,8 +1,8 @@
 <template>
-  <q-card :manga="manga" dark class="manga-card" @click="goToManga(manga.slug)">
+  <q-card :manga="manga" flat @click="goToManga(manga.slug)">
     <q-img :src="manga.image && manga.image.url"
-           :height="'80%'"
-           contain
+           :contain="false"
+           :ratio="2/3"
            class="manga-img">
       <template v-slot:error>
         <div class="absolute-full flex flex-center bg-negative text-white">
@@ -10,9 +10,9 @@
         </div>
       </template>
     </q-img>
-    <q-item class="q-px-xs q-py-none manga-container">
+    <q-item class="q-pa-none">
       <q-item-section>
-        <q-item-label :lines="1" class="manga-title">{{ manga.title }}</q-item-label>
+        <q-item-label :lines="1" class="manga-title text-uppercase">{{ manga.title }}</q-item-label>
       </q-item-section>
     </q-item>
   </q-card>
@@ -35,16 +35,16 @@ export default {
 </script>
 
 <style>
-  .manga-card {
-    height: 100%;
-  }
-  .manga-img {
-    height: 85%;
-  }
-  .manga-title {
-    font-size: 3vw;
-  }
-  .manga-container {
-    min-height: 30px;
-  }
+  /*.manga-card {*/
+  /*  height: 100%;*/
+  /*}*/
+  /*.manga-img {*/
+  /*  height: 85%;*/
+  /*}*/
+  /*.manga-title {*/
+  /*  font-size: 3vw;*/
+  /*}*/
+  /*.manga-container {*/
+  /*  min-height: 30px;*/
+  /*}*/
 </style>
