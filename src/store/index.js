@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import localStoragePlugin, { getDefaultState } from '@/store/plugins/localStoragePlugin'
 import modules from './modules'
+import actions from '@/store/actions'
 
 // we first import the module
 Vue.use(Vuex)
@@ -16,6 +17,7 @@ const Store = new Vuex.Store({
       }
     )
   },
+  actions,
   modules,
   // enable strict mode (adds overhead!)
   // for dev mode only
@@ -24,9 +26,13 @@ const Store = new Vuex.Store({
 })
 
 if (module.hot) {
-  module.hot.accept(['./modules'], () => {
+  module.hot.accept(['./actions', './modules'], () => {
+    const actions = require('./actions').default
     const modules = require('./modules').default
-    Store.hotUpdate({ modules })
+    Store.hotUpdate({
+      actions,
+      modules
+    })
   })
 }
 
