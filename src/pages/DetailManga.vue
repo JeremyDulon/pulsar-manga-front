@@ -112,6 +112,8 @@ export default {
     if (this.stateFavorite) {
       let favorite = this.stateFavorite
       this.mangaPlatform = this.manga.platforms.find(platform => platform.platform.id === favorite.id)
+    } else {
+      this.mangaPlatform = this.manga.platforms[0]
     }
   },
   methods: {
