@@ -34,20 +34,32 @@
         </q-toolbar>
       </q-header>
       <q-page padding>
-        <div class="row">
-          <div class="text-subtitle2">Liste des chapitres</div>
-        </div>
-        <div class="row q-col-gutter-sm">
-          <div class="col-xs-3 col-sm-2 col-lg-1" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
-            <q-card :dark="stateFavorite && stateFavorite.chapter === chapter.id">
-              <q-card-section>
-                <div class="col">
-                  <div>Ch. {{ chapter.number }}</div>
-                  <i class="text-caption">{{ chapterDateDiff(chapter.date) }}</i>
-                </div>
-              </q-card-section>
-            </q-card>
+        <div v-if="sortedChapters.length">
+          <div class="row">
+            <div class="text-subtitle2">Liste des chapitres</div>
           </div>
+          <div class="row q-col-gutter-sm">
+            <div class="col-xs-3 col-sm-2 col-lg-1" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
+              <q-card :dark="stateFavorite && stateFavorite.chapter === chapter.id">
+                <q-card-section>
+                  <div class="col">
+                    <div>Ch. {{ chapter.number }}</div>
+                    <i class="text-caption">{{ chapterDateDiff(chapter.date) }}</i>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
+        </div>
+        <div class="fixed-center text-center" v-else>
+          <p>
+            <img
+                src="~assets/sad.svg"
+                alt="Sad"
+                style="width:30vw;max-width:150px;"
+            >
+          </p>
+          <p class="text-faded">No chapters here</p>
         </div>
       </q-page>
       <q-dialog v-model="selectPlatformDialog">
@@ -111,9 +123,10 @@ export default {
     this.manga = await getManga(this.mangaSlug)
     if (this.stateFavorite) {
       let favorite = this.stateFavorite
-      this.mangaPlatform = this.manga.platforms.find(platform => platform.platform.id === favorite.id)
+      this.mangaPlatform = this.manga.platforms.find(platform => platform.id === favorite.id)
     } else {
-      this.mangaPlatform = this.manga.platforms[0]
+      let platformsByChLength = this._.orderBy(this.manga.platforms, ['length'], ['desc'])
+      this.mangaPlatform = platformsByChLength[0]
     }
   },
   methods: {
