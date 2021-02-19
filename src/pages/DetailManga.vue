@@ -20,6 +20,9 @@
             <q-btn v-for="action in actions" :key="action.label"
                 flat round dense
                 :icon="action.icon" @click="action.action" />
+            <q-btn v-for="action in adminActions" :key="action.label"
+                 flat round dense
+                 :icon="action.icon" @click="action.action" />
           </div>
           <div class="lt-md">
             <q-btn flat round dense icon="fas fa-bars">
