@@ -1,32 +1,38 @@
 <template>
-  <div class="col-12">
-    <q-form
-      class="q-gutter-md"
-      @submit="onSubmit" @reset="onReset">
+  <q-form
+    class="q-px-md"
+    @submit="onSubmit" @reset="onReset">
+    <div>
       <q-input
-        filled
-        v-model="url"
-        label="Manga's url"
-        lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Set an url']"
+          class="col-12"
+          filled
+          v-model="url"
+          label="Manga's url"
+          :rules="[ val => val && val.length > 0 || 'Set an url']"
+      />
+    </div>
+    <div class="row q-gutter-lg">
+      <q-input
+          class="col"
+          filled
+          type="number"
+          v-model="offset"
+          label="Offset"
       />
       <q-input
-        type="number"
-        v-model="offset"
-        label="Offset"
+          class="col"
+          filled
+          type="number"
+          v-model="chapter"
+          label="Chapter Number"
       />
-      <q-input
-        type="number"
-        v-model="chapter"
-        label="Chapter Number"
-      />
-      <q-toggle v-model="images" label="Add images" />
-      <div>
-        <q-btn label="Submit" type="submit" color="primary"/>
-        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-      </div>
-    </q-form>
-  </div>
+    </div>
+    <q-toggle v-model="images" label="Add images" />
+    <div>
+      <q-btn label="Submit" type="submit" color="primary"/>
+      <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+    </div>
+  </q-form>
 </template>
 
 <script>
@@ -38,12 +44,15 @@ export default {
     url: {
       type: String,
       default: null
+    },
+    chapter: {
+      type: Number,
+      default: null
     }
   },
   data () {
     return {
       offset: null,
-      chapter: null,
       images: true
     }
   },

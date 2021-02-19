@@ -1,36 +1,53 @@
 <template>
   <keep-alive>
     <div>
-      <q-header reveal @reveal="reveal">
+      <q-header>
         <q-toolbar class="bg-cyan-9">
           <q-btn
             icon="fa fa-chevron-left"
             flat dense
             v-go-back="{name: 'home'}" />
-          <q-img class="col-xs-3" :src="manga.image && manga.image.url" contain style="max-height: 100px; max-width: 100px;" />
+          <q-img class="col-xs-3"
+                 v-if="!lightHeader"
+                 :src="manga.image && manga.image.url"
+                 contain style="max-height: 100px; max-width: 100px;" />
           <q-toolbar-title>
             <q-item-label class="text-h6">{{ manga.title }}</q-item-label>
-            <q-item-label class="text-subtitle2">{{ mangaPlatform.author }}</q-item-label>
-            <q-item-label class="text-subtitle2">{{ mangaPlatform.views_count }} views</q-item-label>
+            <q-item-label v-if="!lightHeader && mangaPlatform.author" class="text-subtitle2">{{ mangaPlatform.author }}</q-item-label>
+            <q-item-label v-if="!lightHeader && mangaPlatform.views_count" class="text-subtitle2">{{ mangaPlatform.views_count }} views</q-item-label>
           </q-toolbar-title>
-          <q-btn flat round dense icon="fas fa-server" @click="selectPlatformDialog = !selectPlatformDialog"/>
-          <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
-          <!-- TODO: Add favorite (to user) -->
-          <q-btn flat round dense :icon="favoriteIcon" @click="addFavorite(mangaPlatform.id)" />
-        </q-toolbar>
-      </q-header>
-      <q-header v-if="lightHeader">
-        <q-toolbar class="bg-cyan-9">
-          <q-btn
-            icon="fa fa-chevron-left"
-            flat dense
-            v-go-back="{name: 'home'}" />
-          <q-toolbar-title>
-            <q-item-label class="text-h6">{{ manga.title }}</q-item-label>
-          </q-toolbar-title>
-          <q-btn flat round dense :icon="sortIcon" @click="sortDesc = !sortDesc" />
-          <!-- TODO: Add favorite (to user) -->
-          <q-btn flat round dense :icon="favoriteIcon" @click="addFavorite(manga.slug)" />
+          <div class="gt-sm">
+            <q-btn v-for="action in actions" :key="action.label"
+                flat round dense
+                :icon="action.icon" @click="action.action" />
+          </div>
+          <div class="lt-md">
+            <q-btn flat round dense icon="fas fa-bars">
+              <q-menu>
+                <q-list>
+                  <q-item v-for="action in actions" :key="action.label"
+                          @click="action.action"
+                          clickable v-close-popup>
+                    <q-item-section>{{ action.label }}</q-item-section>
+                    <q-item-section avatar>
+                      <q-icon :name="action.icon" />
+                    </q-item-section>
+                  </q-item>
+                  <div v-if="true">
+                    <q-separator />
+                    <q-item v-for="action in adminActions" :key="action.label"
+                            @click="action.action"
+                            clickable v-close-popup>
+                      <q-item-section>{{ action.label }}</q-item-section>
+                      <q-item-section avatar>
+                        <q-icon :name="action.icon" />
+                      </q-item-section>
+                    </q-item>
+                  </div>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </div>
         </q-toolbar>
       </q-header>
       <q-page padding>
@@ -84,13 +101,10 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="addSourceDialog">
-        <q-card>
-          <q-card-section>
-            <form-source :url="mangaPlatform.source_url" />
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+      <dialog-add-source v-model="addSourceDialog"
+                         :chapter="latestChapter"
+                         :url="mangaPlatform.source_url"
+      />
     </div>
   </keep-alive>
 </template>
@@ -98,17 +112,19 @@
 import { getManga } from '@/utils/api'
 import { todayDiff, dateFormatIso } from '@/utils/date'
 import { createNamespacedHelpers } from 'vuex'
-import FormSource from 'components/forms/FormSource'
+import DialogAddSource from 'components/dialog/DialogAddSource'
 const storeUser = createNamespacedHelpers('user')
 
 export default {
   name: 'DetailManga',
-  components: { FormSource },
+  components: { DialogAddSource },
   data () {
     let self = this
     return {
       mangaSlug: self.$route.params.slug,
-      manga: {},
+      manga: {
+        platforms: []
+      },
       mangaPlatform: {},
       sortDesc: true,
       lightHeader: false,
@@ -130,8 +146,14 @@ export default {
     }
   },
   methods: {
-    reveal (val) {
-      this.lightHeader = !val
+    togglePlatformDialog () {
+      this.selectPlatformDialog = !this.selectPlatformDialog
+    },
+    toggleSortOrder () {
+      this.sortDesc = !this.sortDesc
+    },
+    toggleSourceDialog () {
+      this.addSourceDialog = !this.addSourceDialog
     },
     changePlatform (id) {
       this.mangaPlatform = this.manga.platforms[id]
@@ -161,6 +183,34 @@ export default {
     })
   },
   computed: {
+    actions () {
+      return [
+        {
+          label: 'Platforms',
+          icon: 'fas fa-server',
+          action: () => this.togglePlatformDialog()
+        },
+        {
+          label: 'Sort',
+          icon: this.sortIcon,
+          action: () => this.toggleSortOrder()
+        },
+        {
+          label: 'Favorite',
+          icon: this.favoriteIcon,
+          action: () => this.addFavorite(this.mangaPlatform.id)
+        }
+      ]
+    },
+    adminActions () {
+      return [
+        {
+          label: 'AddChapters',
+          icon: 'fas fa-book',
+          action: () => this.toggleSourceDialog()
+        }
+      ]
+    },
     lastUpdate () {
       return dateFormatIso(this.manga.last_updated)
     },
@@ -175,6 +225,9 @@ export default {
     },
     stateFavorite () {
       return this.getFavorite()(this.manga.slug)
+    },
+    latestChapter () {
+      return this._.maxBy(this.sortedChapters, 'number').number
     }
   }
 }
