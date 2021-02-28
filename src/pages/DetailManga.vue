@@ -230,7 +230,7 @@ export default {
       return this.getFavorite()(this.manga.slug)
     },
     latestChapter () {
-      return this._.maxBy(this.sortedChapters, 'number').number
+      return this.sortedChapters.length ? this._.maxBy(this.sortedChapters, 'number').number : null
     }
   }
 }
