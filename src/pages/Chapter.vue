@@ -104,7 +104,7 @@ export default {
     if (!this.$route.params.page) {
       this.currentImage = 1
     }
-    this.mangaSlug = this.chapter.manga
+    this.mangaSlug = this.chapter.manga_slug
     if (this.chapter.chapter_pages.length) {
       this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
       this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
@@ -135,9 +135,6 @@ export default {
     },
     goToNext () {
       this.currentImage = this.currentImage === this.lastNumber ? this.currentImage : this.currentImage + 1
-    },
-    backToManga () {
-      this.$router.push({ name: 'manga', params: { slug: this.$route.params.manga } })
     },
     updateReadPage: _.debounce(async function (pageNumber) {
       await this.readPage({
