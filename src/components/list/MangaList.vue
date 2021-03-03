@@ -25,14 +25,9 @@ export default {
 
 <style>
   .manga-list {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
   }
 
   .manga {
@@ -43,7 +38,17 @@ export default {
     padding: 5px;
   }
 
+  @media screen and (max-width: 1024px) {
+    .manga-list {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
   @media screen and (max-width: 769px) {
+    .manga-list {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     .manga {
       -webkit-box-flex: 0;
       -ms-flex: 0 0 calc(33% - 10px);
