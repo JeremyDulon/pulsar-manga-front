@@ -151,7 +151,6 @@ export default {
       this.goToHome()
     }
     this.manga = await getManga(this.mangaSlug)
-    this.loading = false
     if (this.stateFavorite) {
       let favorite = this.stateFavorite
       this.mangaPlatform = this.manga.platforms.find(platform => platform.id === favorite.id)
@@ -159,6 +158,7 @@ export default {
       let platformsByChLength = this._.orderBy(this.manga.platforms, ['length'], ['desc'])
       this.mangaPlatform = platformsByChLength[0]
     }
+    this.loading = false
   },
   methods: {
     chapterClass (chapter) {
