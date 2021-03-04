@@ -106,7 +106,7 @@
                   @click.native="changePlatform(id)"
                   clickable>
                   <q-item-section>
-                    <q-item-label>{{ mp.platform.name }} ({{ mp.platform.language }})</q-item-label>
+                    <q-item-label>{{ mp.platform.name }} ({{ mp.platform.language }}) - {{ mp.chapters.length + ' ' + plr('chapter', mp.chapters.length) }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -122,6 +122,7 @@
   </keep-alive>
 </template>
 <script>
+import { plr } from '@/utils'
 import { getManga } from '@/utils/api'
 import { todayDiff, dateFormatIso } from '@/utils/date'
 import { createNamespacedHelpers } from 'vuex'
@@ -155,12 +156,13 @@ export default {
       let favorite = this.stateFavorite
       this.mangaPlatform = this.manga.platforms.find(platform => platform.id === favorite.id)
     } else {
-      let platformsByChLength = this._.orderBy(this.manga.platforms, ['length'], ['desc'])
+      let platformsByChLength = this._.orderBy(this.manga.platforms, ['chapters', 'length'], ['desc'])
       this.mangaPlatform = platformsByChLength[0]
     }
     this.loading = false
   },
   methods: {
+    plr: (str, sub) => plr(str, sub),
     chapterClass (chapter) {
       let classes = []
       if (this.stateFavorite && this.stateFavorite.chapter === chapter.id) {
