@@ -1,3 +1,45 @@
 // app global css in Sass form
 .q-tabs
   background: $background
+
+body.body--dark
+  background: $background !important
+
+// MANGAS
+.manga-list
+  display: grid
+  grid-template-columns: repeat(8, 1fr)
+
+.manga
+  min-width: 150px
+  padding: 3px
+
+.manga-label
+  min-height: unset
+
+.manga-title
+  font-size: smaller
+  font-weight: 600
+
+@media screen and (max-width: 1024px)
+  .manga-list
+    grid-template-columns: repeat(6, 1fr)
+
+@media screen and (max-width: 769px)
+  .manga-list
+    grid-template-columns: repeat(3, 1fr)
+
+  .manga
+    min-width: 90px
+
+// CHAPTERS
+.chapter-list
+  display: grid
+  grid-template-columns: repeat(6, 1fr)
+
+.chapter-light
+  color: $dark
+
+@media screen and (max-width: 769px)
+  .chapter-list
+    grid-template-columns: repeat(3, 1fr)

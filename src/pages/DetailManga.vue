@@ -58,9 +58,11 @@
           <div class="row">
             <div class="text-subtitle2">Liste des chapitres</div>
           </div>
-          <div class="row q-col-gutter-sm">
-            <div class="col-xs-3 col-sm-2 col-lg-1" v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
-              <q-card :dark="stateFavorite && stateFavorite.chapter === chapter.id">
+          <div class="row q-col-gutter-sm chapter-list">
+            <div v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
+              <q-card
+                  :class="chapterClass(chapter)"
+                  :dark="!(stateFavorite && stateFavorite.chapter === chapter.id)">
                 <q-card-section>
                   <div class="col">
                     <div>Ch. {{ chapter.number }}</div>
@@ -149,6 +151,13 @@ export default {
     }
   },
   methods: {
+    chapterClass (chapter) {
+      let classes = []
+      if (this.stateFavorite && this.stateFavorite.chapter === chapter.id) {
+        classes.push('chapter-light')
+      }
+      return classes
+    },
     togglePlatformDialog () {
       this.selectPlatformDialog = !this.selectPlatformDialog
     },
@@ -235,9 +244,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.q-card__section {
-  padding: 8px 16px;
-}
-</style>

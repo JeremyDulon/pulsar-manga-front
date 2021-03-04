@@ -22,31 +22,3 @@ export default {
 }
 
 </script>
-
-<style>
-  .manga-list {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-  }
-
-  .manga {
-    min-width: 150px;
-    padding: 3px;
-  }
-
-  @media screen and (max-width: 1024px) {
-    .manga-list {
-      grid-template-columns: repeat(6, 1fr);
-    }
-  }
-
-  @media screen and (max-width: 769px) {
-    .manga-list {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .manga {
-      min-width: 90px;
-    }
-  }
-</style>

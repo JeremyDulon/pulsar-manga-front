@@ -1,5 +1,7 @@
 <template>
-  <q-card :manga="manga" flat @click="goToManga(manga.slug)">
+  <q-card :manga="manga"
+          flat square
+          @click="goToManga(manga.slug)">
     <q-img :src="manga.image && manga.image.url"
            :contain="false"
            :ratio="2/3"
@@ -10,7 +12,7 @@
         </div>
       </template>
     </q-img>
-    <q-item class="q-pa-none">
+    <q-item class="q-py-sm q-px-none manga-label">
       <q-item-section>
         <q-item-label :lines="1" class="manga-title text-uppercase">{{ manga.title }}</q-item-label>
       </q-item-section>
@@ -33,18 +35,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  /*.manga-card {*/
-  /*  height: 100%;*/
-  /*}*/
-  /*.manga-img {*/
-  /*  height: 85%;*/
-  /*}*/
-  /*.manga-title {*/
-  /*  font-size: 3vw;*/
-  /*}*/
-  /*.manga-container {*/
-  /*  min-height: 30px;*/
-  /*}*/
-</style>

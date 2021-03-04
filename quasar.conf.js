@@ -44,6 +44,9 @@ module.exports = function (ctx) {
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
 
+      config: {
+        dark: true
+      },
       components: [],
       directives: [],
       cssAddon: true,
