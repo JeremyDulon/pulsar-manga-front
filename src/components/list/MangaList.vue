@@ -27,7 +27,6 @@ export default {
   .manga-list {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    gap: 10px;
   }
 
   .manga {
