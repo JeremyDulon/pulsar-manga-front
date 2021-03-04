@@ -30,11 +30,8 @@ export default {
   }
 
   .manga {
-    -webkit-box-flex: 0;
-    -ms-flex: 0 0 calc(10% - 15px);
-    flex: 0 0 calc(10% - 15px);
     min-width: 150px;
-    padding: 5px;
+    padding: 3px;
   }
 
   @media screen and (max-width: 1024px) {
@@ -45,13 +42,10 @@ export default {
 
   @media screen and (max-width: 769px) {
     .manga-list {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
     .manga {
-      -webkit-box-flex: 0;
-      -ms-flex: 0 0 calc(33% - 10px);
-      flex: 0 0 calc(33% - 10px);
       min-width: 90px;
     }
   }
