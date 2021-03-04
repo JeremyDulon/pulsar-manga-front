@@ -54,12 +54,18 @@
         </q-toolbar>
       </q-header>
       <q-page padding>
+        <q-inner-loading :showing="loading">
+          <q-spinner-ball size="30%" color="secondary" />
+        </q-inner-loading>
         <div v-if="sortedChapters.length">
           <div class="row">
             <div class="text-subtitle2">Liste des chapitres</div>
           </div>
           <div class="row q-col-gutter-sm chapter-list">
-            <div v-for="chapter in sortedChapters" :key="chapter.id" @click="goToChapter(chapter.id)">
+            <div
+                v-for="chapter in sortedChapters"
+                :key="chapter.id"
+                @click="goToChapter(chapter.id)">
               <q-card
                   :class="chapterClass(chapter)"
                   :dark="!(stateFavorite && stateFavorite.chapter === chapter.id)">
@@ -130,6 +136,7 @@ export default {
       manga: {
         platforms: []
       },
+      loading: true,
       mangaPlatform: {},
       sortDesc: true,
       lightHeader: false,
@@ -142,6 +149,7 @@ export default {
       this.goToHome()
     }
     this.manga = await getManga(this.mangaSlug)
+    this.loading = false
     if (this.stateFavorite) {
       let favorite = this.stateFavorite
       this.mangaPlatform = this.manga.platforms.find(platform => platform.id === favorite.id)
