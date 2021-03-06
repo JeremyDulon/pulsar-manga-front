@@ -25,10 +25,19 @@
         <q-carousel-slide v-for="image in orderedImages"
                           :key="image.number"
                           :name="image.number"
-                          :img-src="image.file && image.file.url"
                           :draggable="false"
-                          class="chapter-slide"
-                          @click="navigation = !navigation"/>
+                          class="chapter-slide q-pa-none"
+                          @click="navigation = !navigation">
+          <v-zoomer
+              :zoomingElastic="false"
+              style="width: 100%; height: 100%;">
+            <img
+                :src="image.file && image.file.url"
+                alt=""
+                style="object-fit: contain; width: 100%; height: 100%;"
+            >
+          </v-zoomer>
+        </q-carousel-slide>
         <template v-slot:control v-if="navigation">
           <q-carousel-control position="bottom" :offset="[18, 18]">
             <q-slider v-model="currentImage"
