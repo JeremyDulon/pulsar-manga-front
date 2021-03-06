@@ -29,7 +29,9 @@
                           class="chapter-slide q-pa-none"
                           @click="navigation = !navigation">
           <v-zoomer
+              :limitTranslation="false"
               :zoomingElastic="false"
+              @swipe="swipe"
               style="width: 100%; height: 100%;">
             <img
                 :src="image.file && image.file.url"
@@ -80,7 +82,7 @@ export default {
     return {
       mangaSlug: null,
       chapter: {},
-      currentImage: this.$route.params.page,
+      currentImage: this.$route.params.page ? this.$route.params.page : 1,
       firstNumber: null,
       lastNumber: 'X',
       navigation: false,
@@ -96,6 +98,9 @@ export default {
       return _.orderBy(this.chapter.chapter_pages, ['number'], [
         this.read === 'ltr' || this.read === 'ud' ? 'asc' : 'desc'
       ])
+    },
+    imagesT () {
+      return _.map(this.orderedImages, (chapter) => chapter.file && chapter.file.url)
     },
     trNext () {
       return this.vertical ? 'slide-up' : 'slide-left'
@@ -144,6 +149,18 @@ export default {
     },
     goToNext () {
       this.currentImage = this.currentImage === this.lastNumber ? this.currentImage : this.currentImage + 1
+    },
+    swipe (e) {
+      console.log(e)
+      if (
+        (e === 'right' && this.read === 'rtl') ||
+        (e === 'left' && this.read === 'ltr')
+      ) { this.goToPrev() }
+
+      if (
+        (e === 'left' && this.read === 'rtl') ||
+        (e === 'right' && this.read === 'ltr')
+      ) { this.goToNext() }
     },
     updateReadPage: _.debounce(async function (pageNumber) {
       await this.readPage({
