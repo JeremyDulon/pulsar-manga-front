@@ -3,7 +3,7 @@
     <q-intersection once :threshold="0.75" class="manga"
          v-for="manga in mangaList"
          :key="manga.i">
-      <manga-card :manga="manga"/>
+      <manga-card :manga="manga" />
     </q-intersection>
   </div>
 </template>

@@ -1,7 +1,6 @@
 <template>
-  <q-card :manga="manga"
-          flat square
-          @click="goToManga(manga.slug)">
+  <q-card flat square
+          @click="goToManga">
     <q-img :src="manga.image && manga.image.url"
            :contain="false"
            :ratio="2/3"
@@ -29,8 +28,8 @@ export default {
     }
   },
   methods: {
-    goToManga (slug) {
-      this.$router.push({ name: 'manga', params: { slug: slug } })
+    goToManga () {
+      this.$router.push({ name: 'manga', params: { slug: this.manga.slug } })
     }
   }
 }

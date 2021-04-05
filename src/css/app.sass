@@ -9,6 +9,8 @@ body.body--dark
 .manga-list
   display: grid
   grid-template-columns: repeat(8, 1fr)
+  &.large
+    grid-template-columns: repeat(3, 1fr)
 
 .manga
   min-width: 150px
@@ -24,10 +26,14 @@ body.body--dark
 @media screen and (max-width: 1024px)
   .manga-list
     grid-template-columns: repeat(6, 1fr)
+    &.large
+      grid-template-columns: repeat(2, 1fr)
 
 @media screen and (max-width: 769px)
   .manga-list
     grid-template-columns: repeat(3, 1fr)
+    &.large
+      grid-template-columns: repeat(1, 1fr)
 
   .manga
     min-width: 90px
