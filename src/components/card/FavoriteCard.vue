@@ -15,7 +15,7 @@
 
       <q-card-section class="col-6">
         <div>
-          <span class="text-weight-bold text-uppercase">{{ manga.title }}</span>
+          <span class="text-weight-bold text-subtitle1 text-uppercase">{{ manga.title }}</span>
         </div>
         <div>
           <span class="text-weight-medium">
