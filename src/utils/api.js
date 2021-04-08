@@ -24,7 +24,7 @@ export const getChapter = async (id) => {
 }
 
 export const getFavorites = async () => {
-  const r = await network.get(apiUrl(`${FAVORITES_URL}/`))
+  const r = await network.get(apiUrl(`${FAVORITES_URL}`))
   return r.data
 }
 
