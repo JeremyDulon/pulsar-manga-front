@@ -125,8 +125,8 @@
 import { plr } from '@/utils'
 import { getManga } from '@/utils/api'
 import { todayDiff, dateFormatIso } from '@/utils/date'
-import { createNamespacedHelpers } from 'vuex'
 import DialogAddSource from 'components/dialog/DialogAddSource'
+import { createNamespacedHelpers } from 'vuex'
 const storeUser = createNamespacedHelpers('user')
 
 export default {

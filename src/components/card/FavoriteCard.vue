@@ -4,7 +4,7 @@
     <q-card-section horizontal>
       <q-badge v-if="latestChapter.number > lastChapter.number"
                color="red" floating>
-        NEW
+        NEW: #{{ latestChapter.number }} {{ latestChapterDate }}
       </q-badge>
       <q-img :src="manga.image && manga.image.url"
              :contain="false"
@@ -33,7 +33,7 @@
       </q-card-section>
 
       <q-card-actions vertical class="col-2 q-px-md">
-        <q-btn flat round color="red" :icon="favoriteIcon" @click.stop="toggleFavorite"/>
+        <q-btn flat round color="red" :icon="favoriteIcon" @click.stop="addFavorite(userMangaPlatform.manga_platform.id)"/>
         <q-btn flat round color="accent" icon="fas fa-bookmark" @click.stop="goToChapter">
           <q-tooltip>Resume reading</q-tooltip>
         </q-btn>
@@ -42,6 +42,9 @@
   </q-card>
 </template>
 <script>
+import { dateFormatIso } from '@/utils/date'
+import { createNamespacedHelpers } from 'vuex'
+const storeUser = createNamespacedHelpers('user')
 export default {
   name: 'FavoriteCard',
   props: {
@@ -60,14 +63,19 @@ export default {
       }
       this.$router.push({ name: 'chapter', params: params })
     },
-    toggleFavorite () {
-      this.$q.notify('TODO')
-    }
+    ...storeUser.mapActions({
+      addFavorite: 'addFavorite'
+    }),
+    ...storeUser.mapGetters({
+      getFavorite: 'getFavorite'
+    })
   },
   computed: {
+    stateFavorite () {
+      return this.getFavorite()(this.manga.slug)
+    },
     favoriteIcon () {
-      console.log(this.userMangaPlatform)
-      return (this.userMangaPlatform.favorite ? 'fas' : 'far') + ' fa-heart'
+      return (this.stateFavorite && this.stateFavorite.favorite ? 'fas' : 'far') + ' fa-heart'
     },
     lastChapter () {
       return this.userMangaPlatform.last_chapter
@@ -77,6 +85,9 @@ export default {
     },
     manga () {
       return this.userMangaPlatform.manga_platform.manga
+    },
+    latestChapterDate () {
+      return dateFormatIso(this.latestChapter.date)
     }
   }
 }
