@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: front.Dockerfile
+      target: develop-stage
+    ports:
+      - "7777:7777"
+    command: /bin/sh -c "npx quasar dev -m spa"
+    volumes:
+      - .:/src
