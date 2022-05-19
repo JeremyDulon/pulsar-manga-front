@@ -23,14 +23,18 @@ export default {
     await network.post('api/token/refresh', {
       refresh_token: token.refresh_token
     }).then(async (res) => {
-      alert(JSON.stringify(res.data))
       commit(mutationTypes.USER_SET_TOKEN, res.data)
     })
   },
   [actionTypes.USER_FETCH]: async ({ commit }) => {
     const r = await network.get('api/me')
-    console.log(r)
-    commit(mutationTypes.USER_SET_USER, r.data)
+    commit(mutationTypes.USER_SET_USER, {
+      id: r.data.id,
+      username: r.data.username,
+      email: r.data.email,
+      languages: r.data.languages,
+      roles: r.data.roles
+    })
   },
   [actionTypes.USER_LOGOUT]: async ({ commit }) => {
     commit(mutationTypes.USER_SET_USER, null)
