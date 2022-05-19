@@ -9,9 +9,9 @@ const network = axios.create({
 })
 
 network.interceptors.request.use((config) => {
-  const t = store.getters['user/authToken']
-  if (t) {
-    config.headers.Authorization = `Bearer ${t.access_token}`
+  const token = store.getters['user/token']
+  if (token) {
+    config.headers.Authorization = `Bearer ${token.token}`
   }
   return config
 })
@@ -38,10 +38,9 @@ network.interceptors.response
     },
     async (error) => {
       if (error.response &&
-        error.response.status === 401 &&
-        error.response.data &&
-        error.response.data.error === 'invalid_grant') {
+        error.response.status === 401) {
         try {
+          alert('todo')
           await store.dispatch('user/' + USER_TOKEN_REFRESH)
           return network(error.config)
         } catch (e) {

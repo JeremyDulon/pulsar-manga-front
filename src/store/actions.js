@@ -3,7 +3,7 @@ import { USER_FETCH } from '@/store/modules/user/action-types'
 
 export default {
   [actionTypes.REFRESH_DATA]: async ({ state, dispatch, commit }) => {
-    if (state.user.authToken === null) return
+    if (state.user.token === null) return
     await dispatch('user/' + USER_FETCH)
   }
 }

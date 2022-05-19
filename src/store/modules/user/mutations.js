@@ -2,7 +2,7 @@ import * as mutationTypes from './mutation-types'
 
 export default {
   [mutationTypes.USER_SET_TOKEN]: (state, token) => {
-    state.authToken = token
+    state.token = token
   },
   [mutationTypes.USER_SET_USER]: (state, user) => {
     state.user = user

@@ -6,11 +6,11 @@ import { getDefaultState } from '@/store/plugins/localStoragePlugin'
 export default {
   namespaced: true,
   state: () => {
-    const { agency, ...userState } = getDefaultState(
+    const { ...userState } = getDefaultState(
       'user',
       {
         user: {},
-        authToken: null,
+        token: null,
         prevLogin: []
       }
     )

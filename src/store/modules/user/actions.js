@@ -4,47 +4,32 @@ import network from '@/utils/network'
 import router from '@/router'
 import { apiUrl, CHAPTER_URL, PAGE_URL, READ_URL } from '@/utils/api'
 
-let refreshRequest = null
-
 export default {
   [actionTypes.USER_LOGIN]: async ({ commit, dispatch }, payload) => {
-    const r = await network.post('oauth/v2/token', {
-      grant_type: 'password',
-      client_id: '1_5w8zrdasdafr4tregd454cw0c0kswcgs0oks40s',
-      client_secret: 'sdgggskokererg4232404gc4csdgfdsgf8s8ck5s',
+    await network.post('api/login', {
       ...payload
-    })
-    commit(mutationTypes.USER_SET_TOKEN, r.data)
-    commit(mutationTypes.USER_ADD_PREV_LOGIN, payload)
-    await dispatch(actionTypes.USER_FETCH).then(() => {
-      router.push('/')
+    }).then(async (res) => {
+      commit(mutationTypes.USER_SET_TOKEN, res.data)
+      commit(mutationTypes.USER_ADD_PREV_LOGIN, payload)
+      await dispatch(actionTypes.USER_FETCH).then(() => {
+        router.push('/')
+      })
     })
   },
-  [actionTypes.USER_TOKEN_REFRESH]: async ({ commit, getters: { authToken } }) => {
-    if (!authToken) {
+  [actionTypes.USER_TOKEN_REFRESH]: async ({ commit, getters: { token } }) => {
+    if (!token) {
       throw new Error('Vous devez vous reconnecter')
     }
-    if (refreshRequest) {
-      await refreshRequest
-    } else {
-      refreshRequest = network.post('oauth/v2/token', {
-        grant_type: 'refresh_token',
-        client_id: '1_5w8zrdasdafr4tregd454cw0c0kswcgs0oks40s',
-        client_secret: 'sdgggskokererg4232404gc4csdgfdsgf8s8ck5s',
-        refresh_token: authToken.refresh_token
-      })
-      try {
-        const r = await refreshRequest
-        commit(mutationTypes.USER_SET_TOKEN, r.data)
-        refreshRequest = null
-      } catch (e) {
-        refreshRequest = null
-        throw new Error(`Échec du rafraîchissement du token...`)
-      }
-    }
+    await network.post('api/token/refresh', {
+      refresh_token: token.refresh_token
+    }).then(async (res) => {
+      alert(JSON.stringify(res.data))
+      commit(mutationTypes.USER_SET_TOKEN, res.data)
+    })
   },
   [actionTypes.USER_FETCH]: async ({ commit }) => {
-    const r = await network.get('api/user')
+    const r = await network.get('api/me')
+    console.log(r)
     commit(mutationTypes.USER_SET_USER, r.data)
   },
   [actionTypes.USER_LOGOUT]: async ({ commit }) => {

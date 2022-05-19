@@ -65,7 +65,7 @@ module.exports = function (ctx) {
     build: {
       env: {
         API: ctx.dev
-          ? '"https://localhost:8000/"'
+          ? '"http://local.pulsar.fr:8888/"'
           // ? '"https://manga.lykaos.fr/"'
           : '"https://manga.lykaos.fr/"'
       },
