@@ -1,5 +1,5 @@
-import Index from 'pages/Index'
-import DetailManga from 'pages/DetailManga'
+import HomeComic from 'pages/HomeComic'
+import DetailComic from 'pages/DetailComic'
 import SearchManga from 'pages/SearchManga'
 import Chapter from 'pages/Chapter'
 import NoLayout from 'layouts/NoLayout'
@@ -27,12 +27,12 @@ const routes = [
       {
         path: '',
         name: 'home',
-        component: Index
+        component: HomeComic
       },
       {
-        path: 'manga/:slug',
-        name: 'manga',
-        component: DetailManga
+        path: 'comic/:slug',
+        name: 'comic',
+        component: DetailComic
       },
       {
         path: 'search',

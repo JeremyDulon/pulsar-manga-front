@@ -9,18 +9,18 @@
         <q-icon v-else name="clear" class="cursor-pointer" @click="text = ''" />
       </template>
     </q-input>
-    <manga-list v-if="filteredList" :manga-list="filteredList" />
+    <comic-list v-if="filteredList" :manga-list="filteredList" />
 
   </q-page>
 </template>
 
 <script>
-import MangaList from 'components/list/MangaList'
-import { getFilteredList } from '@/utils/manga'
+import ComicList from 'components/list/ComicList'
+import { getFilteredList } from '@/utils/comic'
 import _ from 'lodash'
 export default {
   name: 'SearchManga',
-  components: { MangaList },
+  components: { ComicList },
   data () {
     return {
       text: '',

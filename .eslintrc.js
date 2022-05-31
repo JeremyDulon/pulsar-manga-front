@@ -43,7 +43,7 @@ module.exports = {
 
     'import/first': 'off',
     'import/named': 'error',
-    'import/namespace': 'error',
+    // 'import/namespace': 'error',
     'import/default': 'error',
     'import/export': 'error',
     'import/extensions': 'off',

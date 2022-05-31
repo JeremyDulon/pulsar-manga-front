@@ -1,28 +1,25 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import localStoragePlugin, { getDefaultState } from '@/store/plugins/localStoragePlugin'
 import modules from './modules'
 import actions from '@/store/actions'
+import createPersistedState from 'vuex-persistedstate'
+import { STORAGE_KEY } from '@/consts/app'
 
 // we first import the module
 Vue.use(Vuex)
 
+const userState = createPersistedState({
+  key: STORAGE_KEY,
+  paths: ['user', 'userConfig']
+})
+
 const Store = new Vuex.Store({
-  state: {
-    userConfig: getDefaultState(
-      'userConfig',
-      {
-        vertical: false,
-        read: 'rtl'
-      }
-    )
-  },
   actions,
   modules,
   // enable strict mode (adds overhead!)
   // for dev mode only
   strict: process.env.DEV,
-  plugins: [localStoragePlugin]
+  plugins: [userState]
 })
 
 if (module.hot) {

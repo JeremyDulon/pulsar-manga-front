@@ -1,20 +1,20 @@
 <template>
   <div class="q-pa-xs row q-gutter-xs manga-list">
     <q-intersection once :threshold="0.75" class="manga"
-         v-for="manga in mangaList"
-         :key="manga.i">
-      <manga-card :manga="manga" />
+         v-for="comic in comicList"
+         :key="comic.id">
+      <comic-card :comic="comic" />
     </q-intersection>
   </div>
 </template>
 
 <script>
-import MangaCard from 'components/card/MangaCard'
+import ComicCard from 'components/card/ComicCard'
 export default {
-  name: 'MangaList',
-  components: { MangaCard },
+  name: 'ComicList',
+  components: { ComicCard },
   props: {
-    mangaList: {
+    comicList: {
       type: Array,
       default: () => []
     }

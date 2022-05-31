@@ -1,21 +1,11 @@
-import getters from '@/store/modules/user/getters'
-import actions from '@/store/modules/user/actions'
-import mutations from '@/store/modules/user/mutations'
-import { getDefaultState } from '@/store/plugins/localStoragePlugin'
+import getters from './getters'
+import actions from './actions'
+import mutations from './mutations'
+import state from './state'
 
 export default {
   namespaced: true,
-  state: () => {
-    const { ...userState } = getDefaultState(
-      'user',
-      {
-        user: {},
-        token: null,
-        prevLogin: []
-      }
-    )
-    return userState
-  },
+  state,
   actions,
   mutations,
   getters

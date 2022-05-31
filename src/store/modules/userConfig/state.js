@@ -1,6 +1,4 @@
-export default function () {
-  return {
-    vertical: false,
-    read: 'ltr'
-  }
+export default {
+  vertical: false,
+  read: 'ltr'
 }

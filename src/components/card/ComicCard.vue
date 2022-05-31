@@ -1,7 +1,7 @@
 <template>
   <q-card flat square
-          @click="goToManga">
-    <q-img :src="manga.image && manga.image.url"
+          @click="goToComic">
+    <q-img :src="comic.image && comic.image.url"
            :contain="false"
            :ratio="2/3"
            class="manga-img">
@@ -13,7 +13,7 @@
     </q-img>
     <q-item class="q-py-sm q-px-none manga-label">
       <q-item-section>
-        <q-item-label :lines="1" class="manga-title text-uppercase">{{ manga.title }}</q-item-label>
+        <q-item-label :lines="1" class="manga-title text-uppercase">{{ comic.title }}</q-item-label>
       </q-item-section>
     </q-item>
   </q-card>
@@ -21,15 +21,15 @@
 <script>
 
 export default {
-  name: 'MangaCard',
+  name: 'ComicCard',
   props: {
-    manga: {
+    comic: {
       type: Object
     }
   },
   methods: {
-    goToManga () {
-      this.$router.push({ name: 'manga', params: { slug: this.manga.slug } })
+    goToComic () {
+      this.$router.push({ name: 'comic', params: { slug: this.comic.slug } })
     }
   }
 }

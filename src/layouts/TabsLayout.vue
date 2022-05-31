@@ -11,12 +11,14 @@
         <q-route-tab icon="fas fa-cog" :to="{ name: 'userConfig' }" />
         <q-route-tab icon="fas fa-th-list" to="/" />
         <q-route-tab v-if="isAdmin" icon="fas fa-plus" :to="{ name: 'addSource' }" />
+        <q-tab icon="fas fa-sign-out-alt" v-on:click="logout()" />
       </q-tabs>
     </q-footer>
   </q-layout>
 </template>
 <script>
 import { createNamespacedHelpers } from 'vuex'
+import { USER_LOGOUT } from '@/store/modules/user/action-types'
 const storeUser = createNamespacedHelpers('user')
 
 export default {
@@ -25,6 +27,11 @@ export default {
     ...storeUser.mapGetters({
       isLogged: 'isLogged',
       isAdmin: 'isAdmin'
+    })
+  },
+  methods: {
+    ...storeUser.mapActions({
+      logout: USER_LOGOUT
     })
   }
 }
