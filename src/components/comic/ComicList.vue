@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import ComicCard from 'components/card/ComicCard'
+import ComicCard from 'components/comic/ComicCard'
 export default {
   name: 'ComicList',
   components: { ComicCard },

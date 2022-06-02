@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import ComicList from 'components/list/ComicList'
+import ComicList from 'components/comic/ComicList'
 import { getFilteredList } from '@/utils/comic'
 import _ from 'lodash'
 export default {

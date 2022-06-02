@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ComicList from 'components/list/ComicList'
+import ComicList from 'components/comic/ComicList'
 import { list } from '@/utils/vuexer'
 const { getters, actions } = list('Comic')
 
@@ -16,9 +16,20 @@ export default {
     return {}
   },
   created () {
-    this.getItems()
+    this.onCreated()
   },
-  methods: actions,
+  beforeDestroy () {
+    this.onBeforeDestroy()
+  },
+  methods: {
+    ...actions,
+    onCreated () {
+      this.getItems().then(data => console.log(data))
+    },
+    onBeforeDestroy () {
+      this.reset()
+    }
+  },
   computed: getters
 }
 </script>

@@ -14,6 +14,7 @@
     <q-item class="q-py-sm q-px-none manga-label">
       <q-item-section>
         <q-item-label :lines="1" class="manga-title text-uppercase">{{ comic.title }}</q-item-label>
+        <q-item-label :lines="1" class="manga-title text-uppercase">{{ comicLanguages }}</q-item-label>
       </q-item-section>
     </q-item>
   </q-card>
@@ -30,6 +31,11 @@ export default {
   methods: {
     goToComic () {
       this.$router.push({ name: 'comic', params: { slug: this.comic.slug } })
+    }
+  },
+  computed: {
+    comicLanguages () {
+      return this.comic.comicLanguages.map(l => l.language).join('|')
     }
   }
 }

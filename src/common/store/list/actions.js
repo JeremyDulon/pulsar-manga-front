@@ -7,5 +7,7 @@ export const getCommonList = (
   return fetchApi({ id }, { params })
     .then((data) => {
       commit('listSetItems', data['hydra:member'])
+      commit('listSetTotalItems', data['hydra:totalItems'])
+      return data
     })
 }
