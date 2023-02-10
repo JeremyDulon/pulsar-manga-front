@@ -1,7 +1,7 @@
-import HomeComic from 'pages/HomeComic'
-import DetailComic from 'pages/DetailComic'
+import ListComic from 'pages/ListComic'
+import ShowComic from 'pages/ShowComic.vue'
 import SearchManga from 'pages/SearchManga'
-import Chapter from 'pages/Chapter'
+import ShowComicIssue from 'pages/ShowComicIssue.vue'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
 import FavoritesManga from 'pages/FavoritesManga'
@@ -27,12 +27,12 @@ const routes = [
       {
         path: '',
         name: 'home',
-        component: HomeComic
+        component: ListComic
       },
       {
-        path: 'comic/:slug',
+        path: 'comic/:id',
         name: 'comic',
-        component: DetailComic
+        component: ShowComic
       },
       {
         path: 'search',
@@ -58,13 +58,13 @@ const routes = [
     ]
   },
   {
-    path: '/chapter/',
+    path: '/comic-issue/',
     component: NoLayout,
     children: [
       {
         path: ':id',
-        name: 'chapter',
-        component: Chapter
+        name: 'comicIssue',
+        component: ShowComicIssue
       }
     ]
   },

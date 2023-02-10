@@ -1,2 +1,4 @@
-import makeState from '@/common/store/list/state'
-export default makeState()
+export default () => ({
+  items: [],
+  totalItems: 0
+})

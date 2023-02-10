@@ -1,16 +1,16 @@
 <template>
   <q-page>
-    <comic-list :comic-list="items" />
+    <comic-list :comic-list="comicList" />
   </q-page>
 </template>
 
 <script>
 import ComicList from 'components/comic/ComicList'
 import { list } from '@/utils/vuexer'
-const { getters, actions } = list('Comic')
+const { getters: comicGetters, actions: comicActions } = list('Comic')
 
 export default {
-  name: 'HomeComic',
+  name: 'ListComic',
   components: { ComicList },
   data () {
     return {}
@@ -18,18 +18,14 @@ export default {
   created () {
     this.onCreated()
   },
-  beforeDestroy () {
-    this.onBeforeDestroy()
-  },
   methods: {
-    ...actions,
+    ...comicActions,
     onCreated () {
-      this.getItems().then(data => console.log(data))
-    },
-    onBeforeDestroy () {
-      this.reset()
+      this.getItems()
     }
   },
-  computed: getters
+  computed: {
+    comicList: comicGetters.items
+  }
 }
 </script>

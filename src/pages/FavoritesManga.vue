@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { getFavoritesList } from '@/utils/comic'
+import { getFavoritesList } from '@/utils/_comic'
 import FavoriteList from 'components/list/FavoritesList'
 
 export default {

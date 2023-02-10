@@ -1,4 +1,4 @@
-import { getFavorites, getComicList } from '@/utils/api'
+import { getFavorites, getComicList } from '@/utils/_api'
 
 export async function getFilteredList (filterFn = () => { return true }, sortFn = ['h'], order = ['asc']) {
   let comicResult = await getComicList()

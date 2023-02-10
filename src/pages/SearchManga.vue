@@ -16,7 +16,7 @@
 
 <script>
 import ComicList from 'components/comic/ComicList'
-import { getFilteredList } from '@/utils/comic'
+import { getFilteredList } from '@/utils/_comic'
 import _ from 'lodash'
 export default {
   name: 'SearchManga',

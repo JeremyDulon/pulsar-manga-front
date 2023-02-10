@@ -15,7 +15,7 @@ const debouncedLogout = _.debounce(async () => {
   await store.dispatch('user/' + USER_LOGOUT)
 }, 500)
 
-export const fetchApi = function ({ id, resource }, options = {}) {
+export const fetchApi = function ({ path, resource }, options = {}) {
   if (typeof options.headers === 'undefined') {
     Object.assign(options, { headers: new Headers() })
   }
@@ -41,7 +41,7 @@ export const fetchApi = function ({ id, resource }, options = {}) {
           : `${key}=${options.params[key]}`
       )
       .join('&')
-    id = `${id}?${queryString}`
+    path = `${path}?${queryString}`
   }
 
   // enable CORS for all requests
@@ -57,7 +57,7 @@ export const fetchApi = function ({ id, resource }, options = {}) {
 
   const entryPoint = API_ENTRYPOINT + (API_ENTRYPOINT.endsWith('/') ? '' : '/')
 
-  const url = new URL(id, entryPoint)
+  const url = new URL(path, entryPoint)
 
   return fetch(url, options).then((response) => {
     if (!response.ok) return handleFetchError(url, response)
@@ -80,12 +80,12 @@ export const fetchApi = function ({ id, resource }, options = {}) {
   })
 }
 
-export const fetchCollectionApi = function ({ id, resource }, options = {}) {
-  return fetchApi({ id, resource }, options).then((r) => r['hydra:member'])
+export const fetchCollectionApi = function ({ path, resource }, options = {}) {
+  return fetchApi({ path, resource }, options).then((r) => r['hydra:member'])
 }
 
-export const postFetchApi = function ({ id, resource }, options = { body: {} }) {
-  return fetchApi({ id, resource }, { method: 'POST', body: JSON.stringify(options.body) })
+export const postFetchApi = function ({ path, resource }, options = { body: {} }) {
+  return fetchApi({ path, resource }, { method: 'POST', body: JSON.stringify(options.body) })
 }
 
 const handleFetchError = async (url, response) => {

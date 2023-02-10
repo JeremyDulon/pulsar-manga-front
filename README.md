@@ -9,12 +9,13 @@ npm install
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+quasar dev -m pwa
+```
+or
+```bash
+quasar dev -m spa
 ```
 
-### Lint the files
-```bash
-npm run lint
 ```
 
 ### Build the app for production

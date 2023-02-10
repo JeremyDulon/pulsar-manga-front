@@ -1,31 +1,30 @@
 <template>
   <div>
-    <q-header v-if="navigation || (chapter.chapter_pages && !chapter.chapter_pages.length)" class="bg-black" style="z-index: 9999">
+    <q-header v-if="navigation || (comicIssue && comicIssue.comicPages && !comicIssue.comicPages.length)" class="bg-black" style="z-index: 9999">
       <q-toolbar>
         <q-btn
-          v-go-back="{ name: 'manga', params: { slug: mangaSlug } }"
+          v-go-back="{ name: 'comic', params: { id: comic.id } }"
           size="lg" icon="fa fa-angle-left" color="black" />
         <q-toolbar-title>
-          <div class="text-h6">{{ currentImage }}/{{ lastNumber }} {{ chapter.number }}: {{ chapter.title }}</div>
+          <div class="text-h6">{{ currentImage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
         </q-toolbar-title>
         <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="$q.fullscreen.toggle()"/>
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
     </q-header>
     <q-page>
-      <q-carousel v-if="chapter.chapter_pages && chapter.chapter_pages.length" v-model="currentImage"
+      <q-carousel v-if="comicIssue.comicPages && comicIssue.comicPages.length" v-model="currentImage"
                   animated
                   swipeable
                   fullscreen
-                  keep-alive
                   :transition-next="trNext"
                   :transition-prev="trPrev"
                   :vertical="vertical"
                   ref="chapterSlider">
-        <q-carousel-slide v-for="image in orderedImages"
-                          :key="image.number"
-                          :name="image.number"
-                          :img-src="image.file && image.file.url"
+        <q-carousel-slide v-for="page in orderedPages"
+                          :key="page.number"
+                          :name="page.number"
+                          :img-src="page.file && page.file.url"
                           :draggable="false"
                           class="chapter-slide"
                           @click="navigation = !navigation"/>
@@ -51,40 +50,46 @@
     <q-dialog v-model="showSettings">
       <q-card>
         <q-card-section>
-          <user-config />
+<!--          <user-config />-->
+          <span>UserConfig</span>
         </q-card-section>
       </q-card>
     </q-dialog>
   </div>
 </template>
 <script>
-import { getChapter } from '@/utils/api'
-import { createNamespacedHelpers } from 'vuex'
-import UserConfig from 'pages/UserConfig'
-const storeUserConfig = createNamespacedHelpers('userConfig')
-const storeUser = createNamespacedHelpers('user')
+// import { createNamespacedHelpers } from 'vuex'
+// import UserConfig from 'pages/UserConfig'
+// const storeUserConfig = createNamespacedHelpers('userConfig')
+// const storeUser = createNamespacedHelpers('user')
+
+import { show } from '@/utils/vuexer'
+const { getters: comicGetters } = show('Comic')
+const { getters: comicIssueGetters, actions: comicIssueActions } = show('ComicIssue')
 
 export default {
-  name: 'ChapterPage',
-  components: { UserConfig },
+  name: 'ShowComicIssue',
+  // components: { UserConfig },
   data () {
     return {
-      mangaSlug: null,
-      chapter: {},
       currentImage: this.$route.params.page,
       firstNumber: null,
       lastNumber: 'X',
       navigation: false,
-      showSettings: false
+      showSettings: false,
+      vertical: false,
+      read: 'ltr'
     }
   },
   computed: {
-    ...storeUserConfig.mapGetters({
-      read: 'getRead',
-      vertical: 'getVertical'
-    }),
-    orderedImages () {
-      return _.orderBy(this.chapter.chapter_pages, ['number'], [
+    comic: comicGetters.item,
+    comicIssue: comicIssueGetters.item,
+    // ...storeUserConfig.mapGetters({
+    //   read: 'getRead',
+    //   vertical: 'getVertical'
+    // }),
+    orderedPages () {
+      return _.orderBy(this.comicIssue.comicPages, ['number'], [
         this.read === 'ltr' || this.read === 'ud' ? 'asc' : 'desc'
       ])
     },
@@ -100,20 +105,21 @@ export default {
   },
   async created () {
     document.addEventListener('keyup', this.handleArrows)
-    this.chapter = await getChapter(this.$route.params.id)
+    await this.getComicIssue({ id: this.$route.params.id })
+    // this.chapter = await getComicIssue(this)
     if (!this.$route.params.page) {
       this.currentImage = 1
     }
-    this.mangaSlug = this.chapter.manga_slug
-    if (this.chapter.chapter_pages.length) {
-      this.firstNumber = _.minBy(this.chapter.chapter_pages, (i) => i.number).number
-      this.lastNumber = _.maxBy(this.chapter.chapter_pages, (i) => i.number).number
+    if (this.comicIssue && this.comicIssue.comicPages.length) {
+      this.firstNumber = _.minBy(this.comicIssue.comicPages, (i) => i.number).number
+      this.lastNumber = _.maxBy(this.comicIssue.comicPages, (i) => i.number).number
     }
   },
   methods: {
-    ...storeUser.mapActions({
-      readPage: 'readPage'
-    }),
+    getComicIssue: comicIssueActions.getItem,
+    // ...storeUser.mapActions({
+    //   readPage: 'readPage'
+    // }),
     handleArrows (e) {
       const key = e.key
       if (
@@ -137,10 +143,10 @@ export default {
       this.currentImage = this.currentImage === this.lastNumber ? this.currentImage : this.currentImage + 1
     },
     updateReadPage: _.debounce(async function (pageNumber) {
-      await this.readPage({
-        chapter: this.chapter.id,
-        page: pageNumber
-      })
+      // await this.readPage({
+      //   issue: this.issue.id,
+      //   page: pageNumber
+      // })
     }, 1000)
   },
   watch: {

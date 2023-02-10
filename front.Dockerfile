@@ -1,10 +1,8 @@
 # develop stage
 FROM node:14-alpine as develop-stage
-RUN apk add --update --no-cache python2 && ln -sf python2 /usr/bin/python
 WORKDIR /src
 COPY package*.json ./
-RUN npm i -g @quasar/cli@latest
-RUN npm rebuild node-sass
+RUN npm i -g @quasar/cli
 COPY . .
 
 # local-deps

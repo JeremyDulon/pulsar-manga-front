@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { addSource } from '@/utils/api'
+import { addSource } from '@/utils/_api'
 
 export default {
   name: 'FormSource',

@@ -1,14 +1,13 @@
 import * as actionTypes from './action-types'
 import * as mutationTypes from './mutation-types'
-// import network from '@/utils/network'
 import router from '@/router'
 import { fetchApi, postFetchApi } from '@/utils/fetch'
 import { toast } from '@/utils/ui'
-// import { apiUrl, CHAPTER_URL, PAGE_URL, READ_URL } from '@/utils/api'
+import { API_PREFIX } from '@/consts/api'
 
 export default {
   [actionTypes.USER_LOGIN]: async ({ commit, dispatch }, payload) => {
-    postFetchApi({ id: 'login' }, { body: payload }).then(async (res) => {
+    postFetchApi({ path: API_PREFIX + 'login' }, { body: payload }).then(async (res) => {
       commit(mutationTypes.USER_SET_TOKEN, res)
       commit(mutationTypes.USER_ADD_PREV_LOGIN, payload)
       await dispatch(actionTypes.USER_FETCH).then(() => {
@@ -21,12 +20,12 @@ export default {
     if (!token) {
       throw new Error('Vous devez vous reconnecter')
     }
-    postFetchApi({ id: 'token/refresh' }, { body: { refresh_token: token.refresh_token } }).then((res) => {
+    postFetchApi({ path: API_PREFIX + 'token/refresh' }, { body: { refresh_token: token.refresh_token } }).then((res) => {
       commit(mutationTypes.USER_SET_TOKEN, res)
     })
   },
   [actionTypes.USER_FETCH]: async ({ commit }) => {
-    fetchApi({ id: 'me' }).then((res) => {
+    fetchApi({ path: API_PREFIX + 'me' }).then((res) => {
       commit(mutationTypes.USER_SET_USER, {
         id: res.id,
         username: res.username,
@@ -42,15 +41,18 @@ export default {
     await router.push({ name: 'login' })
   },
   [actionTypes.USER_ADD_FAVORITE]: async ({ commit }, mangaData) => {
+    alert('todo USER_ADD_FAVORITE')
     // const r = await network.put('api/favorites/add/' + mangaData)
     // commit(mutationTypes.USER_SET_USER, r.data)
   },
   [actionTypes.USER_READ_CHAPTER]: async ({ commit }, chapterData) => {
+    alert('todo USER_READ_CHAPTER')
     // const r = await network.put('api/read/chapter/' + chapterData)
     // Besoin de mutation ?
     // console.log(r.data)
   },
   [actionTypes.USER_READ_PAGE]: async ({ commit }, chapterData) => {
+    alert('todo USER_READ_PAGE')
     // const r = await network.put(apiUrl(`${READ_URL}/${CHAPTER_URL}/${chapterData.chapter}/${PAGE_URL}/${chapterData.page}`))
     // commit(mutationTypes.USER_SET_USER, r.data)
   }

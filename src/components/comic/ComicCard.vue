@@ -30,12 +30,12 @@ export default {
   },
   methods: {
     goToComic () {
-      this.$router.push({ name: 'comic', params: { slug: this.comic.slug } })
+      this.$router.push({ name: 'comic', params: { id: this.comic.id } })
     }
   },
   computed: {
     comicLanguages () {
-      return this.comic.comicLanguages.map(l => l.language).join('|')
+      return this.comic.comicLanguages && this.comic.comicLanguages.map(comicLanguage => comicLanguage.language).join('|')
     }
   }
 }

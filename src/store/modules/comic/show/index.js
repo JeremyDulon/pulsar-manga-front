@@ -1,4 +1,4 @@
-import actions from './actions'
+import * as actions from './actions'
 import * as getters from './getters'
 import state from './state'
 import * as mutations from './mutations'
@@ -6,7 +6,7 @@ import * as mutations from './mutations'
 export default {
   namespaced: true,
   state,
-  actions: actions(),
+  actions: actions,
   getters: getters,
   mutations: mutations
 }
