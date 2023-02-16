@@ -1,10 +1,10 @@
-import ListComic from 'pages/ListComic'
-import ShowComic from 'pages/ShowComic.vue'
-import SearchManga from 'pages/SearchManga'
+import ListComicLanguage from 'pages/ListComicLanguage'
+import ShowComicLanguage from 'pages/ShowComicLanguage.vue'
+import SearchManga from 'pages/SearchManga.vue'
 import ShowComicIssue from 'pages/ShowComicIssue.vue'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
-import FavoritesManga from 'pages/FavoritesManga'
+import FavoritesManga from 'pages/FavoritesManga' // Todo
 import UserConfig from 'pages/UserConfig'
 import AddSource from 'pages/AddSource'
 import Login from 'pages/Login'
@@ -27,12 +27,12 @@ const routes = [
       {
         path: '',
         name: 'home',
-        component: ListComic
+        component: ListComicLanguage
       },
       {
         path: 'comic/:id',
         name: 'comic',
-        component: ShowComic
+        component: ShowComicLanguage
       },
       {
         path: 'search',

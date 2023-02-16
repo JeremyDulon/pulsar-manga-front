@@ -10,7 +10,7 @@ Vue.use(Vuex)
 
 const userState = createPersistedState({
   key: STORAGE_KEY,
-  paths: ['user', 'userConfig']
+  paths: ['user']
 })
 
 const Store = new Vuex.Store({

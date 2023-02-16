@@ -1,52 +1,54 @@
 <template>
   <div>
-    <q-header v-if="navigation || (comicIssue && comicIssue.comicPages && !comicIssue.comicPages.length)" class="bg-black" style="z-index: 9999">
+    <q-header v-if="navigation || comicPages.length === 0" class="bg-black" style="z-index: 9999">
       <q-toolbar>
         <q-btn
-          v-go-back="{ name: 'comic', params: { id: comic.id } }"
+          v-go-back="{ name: 'comic', params: { id: comicLanguageId } }"
           size="lg" icon="fa fa-angle-left" color="black" />
         <q-toolbar-title>
-          <div class="text-h6">{{ currentImage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
+          <div class="text-h6">{{ currentPage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
         </q-toolbar-title>
         <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="$q.fullscreen.toggle()"/>
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
     </q-header>
-    <q-page>
-      <q-carousel v-if="comicIssue.comicPages && comicIssue.comicPages.length" v-model="currentImage"
-                  animated
-                  swipeable
-                  fullscreen
-                  :transition-next="trNext"
-                  :transition-prev="trPrev"
-                  :vertical="vertical"
-                  ref="chapterSlider">
-        <q-carousel-slide v-for="page in orderedPages"
-                          :key="page.number"
-                          :name="page.number"
-                          :img-src="page.file && page.file.url"
-                          :draggable="false"
-                          class="chapter-slide"
-                          @click="navigation = !navigation"/>
-        <template v-slot:control v-if="navigation">
-          <q-carousel-control position="bottom" :offset="[18, 18]">
-            <q-slider v-model="currentImage"
-                      label
-                      :label-value="currentImage"
-                      label-always
-                      :min="firstNumber"
-                      :max="lastNumber" />
-          </q-carousel-control>
-        </template>
-      </q-carousel>
-      <q-responsive v-else class="col" :ratio="1" style="max-height: 100%">
-        <div class="flex flex-center items-center">
-          <div class="">
-            <q-icon name="far fa-sad-tear" :size="'100px'" color="grey-4"/>
+    <q-page-container>
+      <q-page>
+        <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
+                    animated
+                    swipeable
+                    fullscreen
+                    :transition-next="trNext"
+                    :transition-prev="trPrev"
+                    :vertical="readMode === 'ttb'"
+                    ref="chapterSlider">
+          <q-carousel-slide v-for="page in orderedPages"
+                            :key="page.id"
+                            :name="page.id"
+                            :img-src="page.file && page.file.url"
+                            :draggable="false"
+                            class="chapter-slide"
+                            @click="navigation = !navigation"/>
+          <template v-slot:control v-if="navigation">
+            <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
+              <q-slider v-model="currentPage"
+                        label
+                        :label-value="currentPage"
+                        label-always
+                        :min="firstNumber"
+                        :max="lastNumber" />
+            </q-carousel-control>
+          </template>
+        </q-carousel>
+        <q-responsive v-else class="col" :ratio="1" style="max-height: 100%">
+          <div class="flex flex-center items-center">
+            <div class="">
+              <q-icon name="far fa-sad-tear" :size="'100px'" color="grey-4"/>
+            </div>
           </div>
-        </div>
-      </q-responsive>
-    </q-page>
+        </q-responsive>
+      </q-page>
+    </q-page-container>
     <q-dialog v-model="showSettings">
       <q-card>
         <q-card-section>
@@ -58,46 +60,46 @@
   </div>
 </template>
 <script>
+import {
+  mapActions,
+  mapGetters
+} from 'vuex'
 // import { createNamespacedHelpers } from 'vuex'
 // import UserConfig from 'pages/UserConfig'
 // const storeUserConfig = createNamespacedHelpers('userConfig')
 // const storeUser = createNamespacedHelpers('user')
 
-import { show } from '@/utils/vuexer'
-const { getters: comicGetters } = show('Comic')
-const { getters: comicIssueGetters, actions: comicIssueActions } = show('ComicIssue')
-
 export default {
   name: 'ShowComicIssue',
-  // components: { UserConfig },
   data () {
     return {
-      currentImage: this.$route.params.page,
+      currentSlideName: null,
       firstNumber: null,
-      lastNumber: 'X',
+      lastNumber: null,
       navigation: false,
       showSettings: false,
-      vertical: false,
-      read: 'ltr'
+      readMode: 'ltr',
+      comicPages: [],
+      comicLanguageId: null
     }
   },
   computed: {
-    comic: comicGetters.item,
-    comicIssue: comicIssueGetters.item,
-    // ...storeUserConfig.mapGetters({
-    //   read: 'getRead',
-    //   vertical: 'getVertical'
-    // }),
+    ...mapGetters({
+      comicIssue: 'comic/comicLanguage/comicIssue/item'
+    }),
     orderedPages () {
-      return _.orderBy(this.comicIssue.comicPages, ['number'], [
-        this.read === 'ltr' || this.read === 'ud' ? 'asc' : 'desc'
+      return _.orderBy(this.comicPages, ['number'], [
+        this.readMode === 'ltr' || this.readMode === 'ttb' ? 'asc' : 'desc'
       ])
     },
     trNext () {
-      return this.vertical ? 'slide-up' : 'slide-left'
+      return this.readMode === 'ttb' ? 'slide-up' : 'slide-left'
     },
     trPrev () {
-      return this.vertical ? 'slide-down' : 'slide-right'
+      return this.readMode === 'ttb' ? 'slide-down' : 'slide-right'
+    },
+    currentPage () {
+      return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 0
     }
   },
   destroyed () {
@@ -106,51 +108,70 @@ export default {
   async created () {
     document.addEventListener('keyup', this.handleArrows)
     await this.getComicIssue({ id: this.$route.params.id })
-    // this.chapter = await getComicIssue(this)
-    if (!this.$route.params.page) {
-      this.currentImage = 1
-    }
-    if (this.comicIssue && this.comicIssue.comicPages.length) {
-      this.firstNumber = _.minBy(this.comicIssue.comicPages, (i) => i.number).number
-      this.lastNumber = _.maxBy(this.comicIssue.comicPages, (i) => i.number).number
-    }
+      .then(() => {
+        let page = 0
+        this.comicLanguageId = this.comicIssue.comicLanguage.id
+        if (this.comicIssue.comicPages.length !== 0) {
+          this.comicPages = this.comicIssue.comicPages
+          this.changeSlide(page)
+          this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
+          this.lastNumber = _.maxBy(this.comicPages, (i) => i.number).number
+        }
+      })
   },
   methods: {
-    getComicIssue: comicIssueActions.getItem,
+    ...mapActions({
+      getComicIssue: 'comic/comicLanguage/comicIssue/getItem',
+      setFavorite: 'user/comicLanguage/setUserFavorite'
+    }),
     // ...storeUser.mapActions({
     //   readPage: 'readPage'
     // }),
     handleArrows (e) {
       const key = e.key
-      if (
-        (this.vertical && key === 'ArrowUp' && this.read === 'ud') ||
-        (this.vertical && key === 'ArrowDown' && this.read === 'du') ||
-        (!this.vertical && key === 'ArrowLeft' && this.read === 'ltr') ||
-        (!this.vertical && key === 'ArrowRight' && this.read === 'rtl')
-      ) { this.goToPrev() }
-
-      if (
-        (this.vertical && key === 'ArrowUp' && this.read === 'du') ||
-        (this.vertical && key === 'ArrowDown' && this.read === 'ud') ||
-        (!this.vertical && key === 'ArrowLeft' && this.read === 'rtl') ||
-        (!this.vertical && key === 'ArrowRight' && this.read === 'ltr')
-      ) { this.goToNext() }
+      switch (key) {
+        case 'ArrowUp':
+          this.goToPrev()
+          break
+        case 'ArrowDown':
+          this.goToNext()
+          break
+        case 'ArrowLeft':
+          this.readMode === 'rtl' ? this.goToNext() : this.goToPrev()
+          break
+        case 'ArrowRight':
+          this.readMode === 'rtl' ? this.goToPrev() : this.goToNext()
+          break
+      }
+    },
+    changeSlide (newPage) {
+      let comicPage = this.comicPages.find((page) => page.number === newPage)
+      this.currentSlideName = comicPage.id
     },
     goToPrev () {
-      this.currentImage = this.currentImage === this.firstNumber ? this.currentImage : this.currentImage - 1
+      let page = this.currentPage === this.firstNumber ? this.currentPage : this.currentPage - 1
+      this.changeSlide(page)
     },
     goToNext () {
-      this.currentImage = this.currentImage === this.lastNumber ? this.currentImage : this.currentImage + 1
+      let page = this.currentPage === this.lastNumber ? this.currentPage : this.currentPage + 1
+      this.changeSlide(page)
     },
     updateReadPage: _.debounce(async function (pageNumber) {
       // await this.readPage({
       //   issue: this.issue.id,
       //   page: pageNumber
       // })
+      await this.setFavorite({
+        body: {
+          comicLanguage: this.comicIssue.comicLanguage['@id'],
+          lastComicIssue: this.comicIssue['@id'],
+          lastPage: pageNumber
+        }
+      })
     }, 1000)
   },
   watch: {
-    currentImage: {
+    currentPage: {
       handler: function (newVal) {
         this.updateReadPage(newVal)
       }
@@ -160,11 +181,16 @@ export default {
 </script>
 
 <style>
-  .chapter-slide {
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: contain;
-    background-position-y: center;
-    background-color: #111111;
-  }
+.chapter-slide {
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: contain;
+  background-position-y: center;
+  background-color: #111111;
+}
+
+.pulsar-slider {
+  background-color: black;
+  padding: 18px;
+}
 </style>

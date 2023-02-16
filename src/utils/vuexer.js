@@ -6,25 +6,23 @@ import {
 } from 'vuex'
 
 export const list = (module) => {
-  const lowmod = module.toLowerCase()
   const getters = mapGetters({
-    items: `${lowmod}/list/items`,
-    totalItems: `${lowmod}/list/totalItems`
+    items: `${module}/items`,
+    totalItems: `${module}/totalItems`
   })
   const actions = mapActions({
-    getItems: `${lowmod}/list/retrieveListItems`
+    getItems: `${module}/retrieveListItems`
   })
   return { getters, actions }
 }
 
 export const show = (module) => {
-  const lowmod = module.charAt(0).toLowerCase() + module.slice(1)
   const getters = mapGetters({
-    item: `${lowmod}/show/item`
+    item: `${module}/item`
   })
   const actions = mapActions({
-    getItem: `${lowmod}/show/getItem`,
-    getLanguageIssues: `${lowmod}/show/retrieveLanguageIssues`
+    getItem: `${module}/getItem`,
+    getLanguageIssues: `${module}/retrieveLanguageIssues`
   })
   return { getters, actions }
 }

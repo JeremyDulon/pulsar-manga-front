@@ -7,6 +7,7 @@
 <script>
 import 'lodash'
 import { REFRESH_DATA } from '@/store/action-types'
+
 export default {
   name: 'App',
   created () {

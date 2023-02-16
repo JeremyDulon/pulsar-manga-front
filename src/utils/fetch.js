@@ -85,7 +85,7 @@ export const fetchCollectionApi = function ({ path, resource }, options = {}) {
 }
 
 export const postFetchApi = function ({ path, resource }, options = { body: {} }) {
-  return fetchApi({ path, resource }, { method: 'POST', body: JSON.stringify(options.body) })
+  return fetchApi({ path, resource }, { ...options, method: 'POST', body: JSON.stringify(options.body) })
 }
 
 const handleFetchError = async (url, response) => {

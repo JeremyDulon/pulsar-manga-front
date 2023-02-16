@@ -24,15 +24,11 @@ export default {
       commit(mutationTypes.USER_SET_TOKEN, res)
     })
   },
-  [actionTypes.USER_FETCH]: async ({ commit }) => {
-    fetchApi({ path: API_PREFIX + 'me' }).then((res) => {
-      commit(mutationTypes.USER_SET_USER, {
-        id: res.id,
-        username: res.username,
-        email: res.email,
-        languages: res.languages,
-        roles: res.roles
-      })
+  [actionTypes.USER_FETCH]: async ({ commit, dispatch }) => {
+    fetchApi({ path: API_PREFIX + 'me' }).then((data) => {
+      commit(mutationTypes.USER_SET_USER, data)
+    }).then(() => {
+      dispatch('comicLanguage/retrieveUserFavorites')
     })
   },
   [actionTypes.USER_LOGOUT]: async ({ commit }) => {

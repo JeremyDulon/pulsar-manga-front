@@ -13,10 +13,10 @@
                  contain style="max-height: 100px; max-width: 100px;" />
           <q-toolbar-title v-if="comic && comicLanguage">
             <q-item-label class="text-h6">{{ comic.title }}</q-item-label>
+            <q-item-label class="text-subtitle2">{{ comicLanguage.language }}</q-item-label>
             <q-item-label v-if="!lightHeader && comicLanguage.author" class="text-subtitle2">{{ comicLanguage.author }}</q-item-label>
-            <q-item-label v-if="!lightHeader && comicLanguage.views_count" class="text-subtitle2">{{ comicLanguage.views_count }} views</q-item-label>
           </q-toolbar-title>
-          <div class="gt-sm">
+          <div class="gt-xs">
             <q-btn v-for="action in actions" :key="action.label"
                 flat round dense
                 :icon="action.icon" @click="action.action" />
@@ -24,7 +24,7 @@
                  flat round dense
                  :icon="action.icon" @click="action.action" />
           </div>
-          <div class="lt-md">
+          <div class="lt-sm">
             <q-btn flat round dense icon="fas fa-bars">
               <q-menu>
                 <q-list>
@@ -92,28 +92,28 @@
           </div>
         </div>
       </q-page>
-      <q-dialog v-model="displayLanguageDialog">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">Change language</div>
-          </q-card-section>
-          <q-card-section v-if="comic && comic.comicLanguages">
-            <div>
-              <q-list>
-                <q-item
-                  v-for="(comicLanguage) in comic.comicLanguages"
-                  :key="comicLanguage['@id']"
-                  @click.native="changeLanguage(comicLanguage['@id'])"
-                  clickable>
-                  <q-item-section>
-                    <q-item-label>{{ comicLanguage.language }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+<!--      <q-dialog v-model="displayLanguageDialog">-->
+<!--        <q-card>-->
+<!--          <q-card-section>-->
+<!--            <div class="text-h6">Change language</div>-->
+<!--          </q-card-section>-->
+<!--          <q-card-section v-if="comic && comic.comicLanguages">-->
+<!--            <div>-->
+<!--              <q-list>-->
+<!--                <q-item-->
+<!--                  v-for="(comicLanguage) in comic.comicLanguages"-->
+<!--                  :key="comicLanguage['@id']"-->
+<!--                  @click.native="changeLanguage(comicLanguage['@id'])"-->
+<!--                  clickable>-->
+<!--                  <q-item-section>-->
+<!--                    <q-item-label>{{ comicLanguage.language }}</q-item-label>-->
+<!--                  </q-item-section>-->
+<!--                </q-item>-->
+<!--              </q-list>-->
+<!--            </div>-->
+<!--          </q-card-section>-->
+<!--        </q-card>-->
+<!--      </q-dialog>-->
     </div>
   </keep-alive>
 </template>
@@ -121,46 +121,42 @@
 import { plr } from '@/utils'
 import { todayDiff, dateFormatIso } from '@/utils/date'
 
-import { show } from '@/utils/vuexer'
-const { getters: comicGetters, actions: comicActions } = show('Comic')
+import {
+  mapActions,
+  mapGetters,
+  mapMutations
+} from 'vuex'
 
 export default {
   name: 'ShowComic',
   data () {
     return {
+      comic: {},
       loading: true,
-      comicLanguage: {},
-      sortDesc: true,
-      lightHeader: false,
-      displayLanguageDialog: false
+      sortDesc: false,
+      lightHeader: false
+      // displayLanguageDialog: false
     }
   },
   async created () {
     if (!this.$route.params.id) {
       this.goToHome()
     }
-    await this.getItem({ id: this.$route.params.id })
-    if (this.comic) {
-      // if (this.stateFavorite && false) {
-      //   let favorite = this.stateFavorite
-      //   this.comicLanguage = this.comic.comicLanguages.find(platform => platform.id === favorite.id)
-      // } else {
-      //   let issuesByLanguagesOrdered = this._.orderBy(this.comic.comicLanguages, ['chapters', 'length'], ['desc'])
-      //   this.comicLanguage = issuesByLanguagesOrdered[0]
-      // }
-      let favoriteLanguage = 'EN'
-      if (this.comic.comicLanguages) {
-        let comicLanguage = this.comic.comicLanguages.find(comicLanguage => comicLanguage.language === favoriteLanguage)
-        await this.getLanguageIssues({ path: comicLanguage['@id'] })
-          .then((data) => {
-            this.comicLanguage = data
-          })
-      }
+    await this.getComicLanguage({ id: this.$route.params.id })
+    if (this.comicLanguage) {
+      this.comic = this.comicLanguage.comic
+      this.updateFavorite(this.userComicLanguages.find(uCL => uCL['comicLanguage'] === this.comicLanguage['@id']))
       this.loading = false
     }
   },
   methods: {
-    ...comicActions,
+    ...mapMutations({
+      updateFavorite: 'user/comicLanguage/showSetItem'
+    }),
+    ...mapActions({
+      getComicLanguage: 'comic/comicLanguage/getItem',
+      setFavorite: 'user/comicLanguage/setUserFavorite'
+    }),
     plr: (str, sub) => plr(str, sub),
     issueClass (issue) {
       let classes = []
@@ -169,15 +165,8 @@ export default {
       }
       return classes
     },
-    toggleDisplayLanguageDialog () {
-      this.displayLanguageDialog = !this.displayLanguageDialog
-    },
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
-    },
-    changeLanguage (id) {
-      this.comicLanguage = this.comic.comicLanguages.find(cl => cl['@id'] === id)
-      this.displayLanguageDialog = false
     },
     goToHome () {
       this.$router.push({ name: 'home' })
@@ -198,24 +187,36 @@ export default {
     }
   },
   computed: {
-    comic: comicGetters.item,
+    ...mapGetters({
+      comicLanguage: 'comic/comicLanguage/item',
+      userComicLanguage: 'user/comicLanguage/item',
+      userComicLanguages: 'user/comicLanguage/items'
+    }),
+    isFavorite () {
+      return this.userComicLanguage ? this.userComicLanguage.favorite : false
+    },
     actions () {
       return [
-        {
-          label: 'Languages',
-          icon: 'fas fa-server',
-          action: () => this.toggleDisplayLanguageDialog()
-        },
+        // {
+        //   label: 'Languages',
+        //   icon: 'fas fa-server',
+        //   action: () => this.toggleDisplayLanguageDialog()
+        // },
         {
           label: 'Sort',
           icon: this.sortIcon,
           action: () => this.toggleSortOrder()
+        },
+        {
+          label: 'Favorite',
+          icon: this.favoriteIcon,
+          action: () => this.setFavorite({
+            body: {
+              comicLanguage: this.comicLanguage['@id'],
+              favorite: !this.isFavorite
+            }
+          })
         }
-        // {
-        //   label: 'Favorite',
-        //   icon: this.favoriteIcon,
-        //   action: () => this.addFavorite(this.comicPlatform.id)
-        // }
       ]
     },
     adminActions () {
@@ -229,7 +230,7 @@ export default {
     },
     lastUpdate () {
       if (!this.comic) return null
-      return dateFormatIso(this.comic.last_updated)
+      return dateFormatIso(this.comic.lastUpdated)
     },
     sortedIssues () {
       if (!this.comicLanguage || !this.comicLanguage.comicIssues) {
@@ -240,12 +241,9 @@ export default {
     sortIcon () {
       return 'fas fa-' + (this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-down')
     },
-    // favoriteIcon () {
-    //   return this.stateFavorite && this.stateFavorite.favorite ? 'fas fa-heart' : 'far fa-heart'
-    // },
-    // stateFavorite () {
-    //   return this.getFavorite()(this.comic.slug)
-    // },
+    favoriteIcon () {
+      return (this.isFavorite ? 'fas' : 'far') + ' fa-heart'
+    },
     latestChapter () {
       return this.sortedIssues.length ? this._.maxBy(this.sortedIssues, 'number').number : null
     }
