@@ -62,7 +62,8 @@
 <script>
 import {
   mapActions,
-  mapGetters
+  mapGetters,
+  mapMutations
 } from 'vuex'
 // import { createNamespacedHelpers } from 'vuex'
 // import UserConfig from 'pages/UserConfig'
@@ -85,7 +86,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      comicIssue: 'comic/comicLanguage/comicIssue/item'
+      comicIssue: 'comic/comicLanguage/comicIssue/item',
+      userComicLanguage: 'user/comicLanguage/item'
     }),
     orderedPages () {
       return _.orderBy(this.comicPages, ['number'], [
@@ -99,7 +101,7 @@ export default {
       return this.readMode === 'ttb' ? 'slide-down' : 'slide-right'
     },
     currentPage () {
-      return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 0
+      return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
     }
   },
   destroyed () {
@@ -109,9 +111,13 @@ export default {
     document.addEventListener('keyup', this.handleArrows)
     await this.getComicIssue({ id: this.$route.params.id })
       .then(() => {
-        let page = 0
+        let page = 1
         this.comicLanguageId = this.comicIssue.comicLanguage.id
+        this.updateFavorite(this.comicIssue.comicLanguage['@id'])
         if (this.comicIssue.comicPages.length !== 0) {
+          if (this.userComicLanguage.lastComicIssue === this.comicIssue['@id'] && this.userComicLanguage.lastPage) {
+            page = this.userComicLanguage.lastPage
+          }
           this.comicPages = this.comicIssue.comicPages
           this.changeSlide(page)
           this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
@@ -120,6 +126,9 @@ export default {
       })
   },
   methods: {
+    ...mapMutations({
+      updateFavorite: 'user/comicLanguage/showSetItem'
+    }),
     ...mapActions({
       getComicIssue: 'comic/comicLanguage/comicIssue/getItem',
       setFavorite: 'user/comicLanguage/setUserFavorite'
@@ -146,7 +155,9 @@ export default {
     },
     changeSlide (newPage) {
       let comicPage = this.comicPages.find((page) => page.number === newPage)
-      this.currentSlideName = comicPage.id
+      if (comicPage) {
+        this.currentSlideName = comicPage.id
+      }
     },
     goToPrev () {
       let page = this.currentPage === this.firstNumber ? this.currentPage : this.currentPage - 1
@@ -157,10 +168,6 @@ export default {
       this.changeSlide(page)
     },
     updateReadPage: _.debounce(async function (pageNumber) {
-      // await this.readPage({
-      //   issue: this.issue.id,
-      //   page: pageNumber
-      // })
       await this.setFavorite({
         body: {
           comicLanguage: this.comicIssue.comicLanguage['@id'],

@@ -145,7 +145,7 @@ export default {
     await this.getComicLanguage({ id: this.$route.params.id })
     if (this.comicLanguage) {
       this.comic = this.comicLanguage.comic
-      this.updateFavorite(this.userComicLanguages.find(uCL => uCL['comicLanguage'] === this.comicLanguage['@id']))
+      this.updateFavorite(this.comicLanguage['@id'])
       this.loading = false
     }
   },
@@ -173,9 +173,6 @@ export default {
     },
     goToIssue (id) {
       let params = { id: id, comic: this.comic.slug }
-      // if (this.stateFavorite && this.stateFavorite.chapter === id && this.stateFavorite.page) {
-      //   params.page = this.stateFavorite.page
-      // }
       this.$router.push({ name: 'comicIssue', params: params })
     },
     chapterDateDiff2 (d) {
