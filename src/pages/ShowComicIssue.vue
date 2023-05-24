@@ -115,9 +115,11 @@ export default {
         this.comicLanguageId = this.comicIssue.comicLanguage.id
         this.updateFavorite(this.comicIssue.comicLanguage['@id'])
         if (this.comicIssue.comicPages.length !== 0) {
+          console.log(this.userComicLanguage, this.comicIssue)
           if (this.userComicLanguage.lastComicIssue === this.comicIssue['@id'] && this.userComicLanguage.lastPage) {
             page = this.userComicLanguage.lastPage
           }
+          console.log(page)
           this.comicPages = this.comicIssue.comicPages
           this.changeSlide(page)
           this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number

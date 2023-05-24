@@ -6,7 +6,7 @@
           <q-btn
             icon="fa fa-chevron-left"
             flat dense
-            v-go-back="{name: 'home'}" />
+            @click="goBack()" />
           <q-img class="col-xs-3"
                  v-if="!lightHeader && comic && comic.image"
                  :src="comic.image && comic.image.url"
@@ -123,12 +123,11 @@ import { todayDiff, dateFormatIso } from '@/utils/date'
 
 import {
   mapActions,
-  mapGetters,
-  mapMutations
+  mapGetters
 } from 'vuex'
 
 export default {
-  name: 'ShowComic',
+  name: 'ShowComicLanguage',
   data () {
     return {
       comic: {},
@@ -140,19 +139,15 @@ export default {
   },
   async created () {
     if (!this.$route.params.id) {
-      this.goToHome()
+      this.goBack()
     }
     await this.getComicLanguage({ id: this.$route.params.id })
     if (this.comicLanguage) {
       this.comic = this.comicLanguage.comic
-      this.updateFavorite(this.comicLanguage['@id'])
       this.loading = false
     }
   },
   methods: {
-    ...mapMutations({
-      updateFavorite: 'user/comicLanguage/showSetItem'
-    }),
     ...mapActions({
       getComicLanguage: 'comic/comicLanguage/getItem',
       setFavorite: 'user/comicLanguage/setUserFavorite'
@@ -168,8 +163,8 @@ export default {
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
     },
-    goToHome () {
-      this.$router.push({ name: 'home' })
+    goBack () {
+      this.$router.back()
     },
     goToIssue (id) {
       let params = { id: id, comic: this.comic.slug }

@@ -20,8 +20,9 @@ export const setUserFavorite = (context, options = {}) => {
   }
   let method = 'POST'
   let endpoint = API_PREFIX + 'user_comic_languages'
-  let userComicLanguage = context.rootGetters['user/comicLanguage/item']
-  if (userComicLanguage) {
+  let userComicLanguages = context.rootGetters['user/comicLanguage/items']
+  let userComicLanguage = userComicLanguages.find(uCL => uCL.comicLanguage['@id'] === options.body.comicLanguage)
+  if (userComicLanguage !== undefined) {
     method = 'PUT'
     endpoint = userComicLanguage['@id']
   }
@@ -33,6 +34,6 @@ export const setUserFavorite = (context, options = {}) => {
     headers
   })
     .then((data) => {
-      context.commit('showSetItem', data)
+      context.commit('updateItemFavorite', data.favorite)
     })
 }
