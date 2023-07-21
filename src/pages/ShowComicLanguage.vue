@@ -62,14 +62,13 @@
             <div class="row">
               <div class="text-subtitle2">Liste des chapitres</div>
             </div>
-            <div class="row q-col-gutter-sm chapter-list">
+            <div class="row q-col-gutter-sm issue-list">
               <div
                   v-for="issue in sortedIssues"
                   :key="issue.id"
                   @click="goToIssue(issue.id)">
                 <q-card
                     :class="issueClass(issue)">
-<!--                    :dark="!(stateFavorite && stateFavorite.chapter === chapter.id)"-->
                   <q-card-section>
                     <div class="col">
                       <div>Ch. {{ issue.number }}</div>
@@ -92,28 +91,6 @@
           </div>
         </div>
       </q-page>
-<!--      <q-dialog v-model="displayLanguageDialog">-->
-<!--        <q-card>-->
-<!--          <q-card-section>-->
-<!--            <div class="text-h6">Change language</div>-->
-<!--          </q-card-section>-->
-<!--          <q-card-section v-if="comic && comic.comicLanguages">-->
-<!--            <div>-->
-<!--              <q-list>-->
-<!--                <q-item-->
-<!--                  v-for="(comicLanguage) in comic.comicLanguages"-->
-<!--                  :key="comicLanguage['@id']"-->
-<!--                  @click.native="changeLanguage(comicLanguage['@id'])"-->
-<!--                  clickable>-->
-<!--                  <q-item-section>-->
-<!--                    <q-item-label>{{ comicLanguage.language }}</q-item-label>-->
-<!--                  </q-item-section>-->
-<!--                </q-item>-->
-<!--              </q-list>-->
-<!--            </div>-->
-<!--          </q-card-section>-->
-<!--        </q-card>-->
-<!--      </q-dialog>-->
     </div>
   </keep-alive>
 </template>
@@ -134,7 +111,6 @@ export default {
       loading: true,
       sortDesc: false,
       lightHeader: false
-      // displayLanguageDialog: false
     }
   },
   async created () {
@@ -155,8 +131,8 @@ export default {
     plr: (str, sub) => plr(str, sub),
     issueClass (issue) {
       let classes = []
-      if (this.stateFavorite && this.stateFavorite.issue === issue.id) {
-        classes.push('chapter-light')
+      if (this.userComicLanguage && this.userComicLanguage.lastComicIssue.id === issue.id) {
+        classes.push('issue-light')
       }
       return classes
     },
@@ -167,7 +143,7 @@ export default {
       this.$router.back()
     },
     goToIssue (id) {
-      let params = { id: id, comic: this.comic.slug }
+      let params = { id: id }
       this.$router.push({ name: 'comicIssue', params: params })
     },
     chapterDateDiff2 (d) {
@@ -189,11 +165,6 @@ export default {
     },
     actions () {
       return [
-        // {
-        //   label: 'Languages',
-        //   icon: 'fas fa-server',
-        //   action: () => this.toggleDisplayLanguageDialog()
-        // },
         {
           label: 'Sort',
           icon: this.sortIcon,
@@ -208,6 +179,11 @@ export default {
               favorite: !this.isFavorite
             }
           })
+        },
+        {
+          label: `Resume (c: ${this.userComicLanguage.lastComicIssue.number} - p: ${this.userComicLanguage.lastPage})`,
+          icon: 'fas fa-bookmark',
+          action: () => this.goToIssue(this.userComicLanguage.lastComicIssue.id)
         }
       ]
     },
@@ -236,7 +212,7 @@ export default {
     favoriteIcon () {
       return (this.isFavorite ? 'fas' : 'far') + ' fa-heart'
     },
-    latestChapter () {
+    latestIssue () {
       return this.sortedIssues.length ? this._.maxBy(this.sortedIssues, 'number').number : null
     }
   }
