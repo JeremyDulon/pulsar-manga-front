@@ -35,10 +35,10 @@ export default {
     text: {
       handler: _.debounce(function (t) {
         const regexp = RegExp(t.toLowerCase())
-        let filteredList = this._.filter(this.mangaList, (m) => {
+        let filteredList = _.filter(this.mangaList, (m) => {
           return regexp.test(m.title.toLowerCase())
         })
-        this.filteredList = this._.orderBy(filteredList, ['h'], ['desc'])
+        this.filteredList = _.orderBy(filteredList, ['h'], ['desc'])
       }, 250)
     }
   }

@@ -1,9 +1,8 @@
 import { API_ENTRYPOINT } from '@/consts/api'
-import store from '@/store'
 import { toast } from '@/utils/ui'
-import { USER_LOGOUT, USER_TOKEN_REFRESH } from '@/store/modules/user/action-types'
 import _ from 'lodash'
 import SubmissionError from '@/error/SubmissionError'
+import { useAuthStore } from '@/stores/auth'
 
 const MIME_TYPE = 'application/ld+json'
 
@@ -11,8 +10,9 @@ const makeParamArray = (key, arr) =>
   arr.map((val) => `${key}[]=${val}`).join('&')
 
 const debouncedLogout = _.debounce(async () => {
+  const authStore = useAuthStore()
   toast.negative('Veuillez vous réauthentifier')
-  await store.dispatch('user/' + USER_LOGOUT)
+  authStore.doLogout()
 }, 500)
 
 export const fetchApi = function ({ path, resource }, options = {}) {
@@ -50,7 +50,8 @@ export const fetchApi = function ({ path, resource }, options = {}) {
     // credentials: 'include', // when credentials needed
   })
 
-  const token = store.getters['user/token']
+  const authStore = useAuthStore()
+  let token = authStore.token
   if (token && token.token) {
     options.headers.set('Authorization', `Bearer ${token.token}`)
   }
@@ -94,10 +95,10 @@ const handleFetchError = async (url, response) => {
     throw new Error('Refresh Token expired')
   }
 
-  const token = store.getters['user/token']
-  if (response.status === 401 && token.refresh_token) {
-    store.dispatch('user/' + USER_TOKEN_REFRESH).catch(() => debouncedLogout())
-    throw new Error('Token expired')
+  const authStore = useAuthStore()
+  const token = authStore.token
+  if (response.status === 401 && token && token.refresh_token) {
+    authStore.doRefreshToken(token).catch(() => debouncedLogout())
   }
 
   if (response.status >= 400) {

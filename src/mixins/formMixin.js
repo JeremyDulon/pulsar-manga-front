@@ -9,7 +9,7 @@ export default {
      * Model par défaut (Généralement un objet)
      * @model
      */
-    value: {
+    modelValue: {
       type: Object,
       required: true
     },
@@ -27,7 +27,7 @@ export default {
        * @event submit
        * @property {any} Le model du formulaire
        */
-      this.$emit('submit', this.value)
+      this.$emit('submit', this.modelValue)
     },
     /**
      * Scroll vers l'élément en erreur

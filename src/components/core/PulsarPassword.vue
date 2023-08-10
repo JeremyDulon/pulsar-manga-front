@@ -1,5 +1,5 @@
 <template>
-  <q-input v-bind="vAttrs" v-on="$listeners"
+  <q-input v-bind="vAttrs"
            :type="showPassword ? 'text' : 'password'">
     <template v-slot:append>
       <q-icon
@@ -10,9 +10,6 @@
     </template>
     <template v-for="(slot, k) in $slots" v-slot:[k]>
       <slot :name="k" />
-    </template>
-    <template v-for="(slot, k) in $scopedSlots" v-slot:[k]="props">
-      <slot :name="k" v-bind="props" />
     </template>
   </q-input>
 </template>

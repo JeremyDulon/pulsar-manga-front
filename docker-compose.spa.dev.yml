@@ -9,5 +9,6 @@ services:
     ports:
       - "7777:7777"
     command: /bin/sh -c "quasar dev -m spa"
+#    command: /bin/sh -c "tail -f /dev/null"
     volumes:
       - .:/src

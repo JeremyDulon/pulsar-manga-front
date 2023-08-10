@@ -6,18 +6,8 @@ import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
 import FavoritesManga from 'pages/FavoritesManga' // Todo
 import UserConfig from 'pages/UserConfig'
-import AddSource from 'pages/AddSource'
 import Login from 'pages/Login'
-
-import store from '@/store'
-
-const isAdmin = (to, from, next) => {
-  if (store.getters['user/isAdmin']) {
-    next()
-    return
-  }
-  next('/')
-}
+import Error404 from 'pages/Error404'
 
 const routes = [
   {
@@ -48,12 +38,6 @@ const routes = [
         path: 'user-config',
         name: 'userConfig',
         component: UserConfig
-      },
-      {
-        path: 'add-source',
-        name: 'addSource',
-        beforeEnter: isAdmin,
-        component: AddSource
       }
     ]
   },
@@ -84,8 +68,9 @@ const routes = [
 // Always leave this as last one
 if (process.env.MODE !== 'ssr') {
   routes.push({
-    path: '*',
-    component: () => import('pages/Error404.vue')
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: Error404
   })
 }
 

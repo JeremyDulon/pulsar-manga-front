@@ -97,6 +97,7 @@
 <script>
 import { plr } from '@/utils'
 import { todayDiff, dateFormatIso } from '@/utils/date'
+import _ from 'lodash'
 
 import {
   mapActions,
@@ -204,7 +205,7 @@ export default {
       if (!this.comicLanguage || !this.comicLanguage.comicIssues) {
         return []
       }
-      return this._.orderBy(this.comicLanguage.comicIssues, ['number'], [ this.sortDesc ? 'desc' : 'asc' ])
+      return _.orderBy(this.comicLanguage.comicIssues, ['number'], [ this.sortDesc ? 'desc' : 'asc' ])
     },
     sortIcon () {
       return 'fas fa-' + (this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-down')
@@ -213,7 +214,7 @@ export default {
       return (this.isFavorite ? 'fas' : 'far') + ' fa-heart'
     },
     latestIssue () {
-      return this.sortedIssues.length ? this._.maxBy(this.sortedIssues, 'number').number : null
+      return this.sortedIssues.length ? _.maxBy(this.sortedIssues, 'number').number : null
     }
   }
 }

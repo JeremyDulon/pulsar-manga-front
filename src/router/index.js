@@ -1,30 +1,24 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-
+import { createRouter, createWebHashHistory } from 'vue-router'
 import routes from './routes'
-import store from '@/store'
+import { useAuthStore } from '@/stores/auth'
 
-Vue.use(VueRouter)
-
-const router = new VueRouter({
-  scrollBehavior: () => ({ x: 0, y: 0 }),
+const router = createRouter({
+  scrollBehavior: () => ({ left: 0, top: 0 }),
   routes,
-
-  // Leave these as they are and change in quasar.conf.js instead!
-  // quasar.conf.js -> build -> vueRouterMode
-  // quasar.conf.js -> build -> publicPath
-  mode: process.env.VUE_ROUTER_MODE,
-  base: process.env.VUE_ROUTER_BASE
+  history: createWebHashHistory(process.env.VUE_ROUTER_BASE)
 })
+
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'login' && !store.getters['user/isLogged']) {
+  const authStore = useAuthStore()
+  if (to.name !== 'login' && authStore.isLogged === false) {
     next({ name: 'login' })
     return
   }
-  if (to.name === 'login' && store.getters['user/isLogged']) {
+  if (to.name === 'login' && authStore.isLogged === true) {
     next({ name: 'home' })
     return
   }
   next()
 })
+
 export default router

@@ -64,6 +64,8 @@ import {
   mapActions,
   mapGetters
 } from 'vuex'
+import _ from 'lodash'
+
 // import { createNamespacedHelpers } from 'vuex'
 // import UserConfig from 'pages/UserConfig'
 // const storeUserConfig = createNamespacedHelpers('userConfig')
@@ -103,7 +105,7 @@ export default {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
     }
   },
-  destroyed () {
+  unmounted () {
     document.addEventListener('keyup', this.handleArrows)
   },
   async created () {

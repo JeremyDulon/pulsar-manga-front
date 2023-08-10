@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpr lFf" v-if="isLogged">
+  <q-layout view="lHh lpr lFf" v-if="authStore.isLogged">
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -10,29 +10,24 @@
         <q-route-tab icon="fas fa-star" :to="{ name: 'favorites' }" />
         <q-route-tab icon="fas fa-cog" :to="{ name: 'userConfig' }" />
         <q-route-tab icon="fas fa-th-list" to="/" />
-        <q-route-tab v-if="isAdmin" icon="fas fa-plus" :to="{ name: 'addSource' }" />
-        <q-tab icon="fas fa-sign-out-alt" v-on:click="logout()" />
+        <q-tab icon="fas fa-sign-out-alt" v-on:click="logout" />
       </q-tabs>
     </q-footer>
   </q-layout>
 </template>
 <script>
-import { createNamespacedHelpers } from 'vuex'
-import { USER_LOGOUT } from '@/store/modules/user/action-types'
-const storeUser = createNamespacedHelpers('user')
+import { useAuthStore } from '@/stores/auth'
+import { mapStores } from 'pinia'
 
 export default {
   name: 'TabsLayout',
   computed: {
-    ...storeUser.mapGetters({
-      isLogged: 'isLogged',
-      isAdmin: 'isAdmin'
-    })
+    ...mapStores(useAuthStore)
   },
   methods: {
-    ...storeUser.mapActions({
-      logout: USER_LOGOUT
-    })
+    logout () {
+      this.authStore.doLogout()
+    }
   }
 }
 </script>

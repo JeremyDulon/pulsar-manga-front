@@ -20,7 +20,8 @@ export default {
   data () {
     return {
       formUser: {
-        username: null
+        username: null,
+        password: null
       }
     }
   }

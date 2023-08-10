@@ -6,7 +6,7 @@
     class="q-col-gutter-sm row"
   >
     <q-input v-if="isLogin || isRegister || isForgot"
-             v-model="value.username"
+             v-model="modelValue.username"
              type="text"
              label="Username" class="col-xs-12">
       <template #append>
@@ -15,7 +15,7 @@
             <q-list>
               <q-item v-for="login in prevLogin" :key="login"
                       v-close-popup
-                      clickable @click="$set(value, 'username', login)">
+                      clickable @click="$set(modelValue, 'username', login)">
                 <q-item-section>
                   <q-item-label>{{ login }}</q-item-label>
                 </q-item-section>
@@ -25,7 +25,7 @@
         </q-btn>
       </template>
     </q-input>
-    <pulsar-password v-if="!isForgot" v-model="value.password"
+    <pulsar-password v-if="!isForgot" v-model="modelValue.password"
                   :label="`${isReset ? 'New p' : 'P'}assword` " type="password"
                   class="col-xs-12">
       <template v-if="isLogin" #hint><a href="#" @click.prevent="onForgot">Forgot password ?</a></template>
@@ -50,13 +50,11 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 import formMixin from '@/mixins/formMixin'
 import PulsarPassword from 'components/core/PulsarPassword'
 import { loadingHandler } from '@/utils/ui'
-import { USER_LOGIN } from '@/store/modules/user/action-types'
-
-const storeUser = createNamespacedHelpers('user')
+import { mapStores } from 'pinia'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: 'FormLogin',
@@ -65,13 +63,12 @@ export default {
   data () {
     // TODO: Make consts for types
     return {
-      type: 'login'
+      type: 'login',
+      prevLogin: []
     }
   },
   computed: {
-    ...storeUser.mapState({
-      prevLogin: 'prevLogin'
-    }),
+    ...mapStores(useAuthStore),
     isLogin () {
       return this.type === 'login'
     },
@@ -86,16 +83,15 @@ export default {
     }
   },
   methods: {
-    ...storeUser.mapActions({
-      login: USER_LOGIN
-    }),
     onSubmit () {
-      const { value, type } = this
+      const { modelValue, type, authStore, $router } = this
       return loadingHandler(
         async () => {
           switch (type) {
             case 'login':
-              await this.login(value)
+              await authStore.doLogin(modelValue).then(() => {
+                $router.push({ name: 'home' })
+              })
               break
           }
         }

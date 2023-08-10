@@ -1,17 +1,18 @@
 <template>
-  <div id="q-app">
-    <router-view />
-  </div>
+  <router-view />
 </template>
 
 <script>
-import 'lodash'
-import { REFRESH_DATA } from '@/store/action-types'
+import { mapStores } from 'pinia'
+import { useUserStore } from '@/stores/user'
 
 export default {
   name: 'App',
-  created () {
-    this.$store.dispatch(REFRESH_DATA)
+  computed: {
+    ...mapStores(useUserStore)
+  },
+  mounted () {
+    this.userStore.doFetchUser()
   }
 }
 </script>

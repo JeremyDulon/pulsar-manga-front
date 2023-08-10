@@ -1,5 +1,5 @@
 # develop stage
-FROM node:18-alpine as develop-stage
+FROM node:18-bullseye as develop-stage
 WORKDIR /src
 COPY package*.json ./
 RUN npm i -g @quasar/cli
@@ -14,7 +14,7 @@ FROM local-deps-stage as build-stage-spa
 RUN quasar build -m spa
 
 # production stage (spa)
-FROM nginx:stable-alpine as production-stage-spa
+FROM nginx:stable-bullseye as production-stage-spa
 COPY --from=build-stage-spa /src/dist/spa /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
@@ -24,7 +24,7 @@ FROM local-deps-stage as build-stage-ssr
 RUN quasar build -m ssr
 
 #production stage (ssr)
-FROM node:lts-alpine as production-stage-ssr
+FROM node:18-bullseye as production-stage-ssr
 WORKDIR /app
 COPY --from=build-stage-ssr /src/dist/ssr .
 RUN npm i

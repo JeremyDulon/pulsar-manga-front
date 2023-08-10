@@ -1,14 +1,16 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
+const { configure } = require('quasar/wrappers')
 const path = require('path')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
-module.exports = function (ctx) {
+module.exports = configure(function (ctx) {
   return {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
-      'lodash'
+      'pinia'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -20,7 +22,7 @@ module.exports = function (ctx) {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v4',
-      'fontawesome-v5',
+      'fontawesome-v6',
       // 'eva-icons',
       // 'themify',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
@@ -31,7 +33,7 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      iconSet: 'fontawesome-v5', // Quasar icon set
+      iconSet: 'fontawesome-v6', // Quasar icon set
       lang: 'fr', // Quasar language pack
 
       // Possible values for "all":
@@ -52,6 +54,7 @@ module.exports = function (ctx) {
 
       // Quasar plugins
       plugins: [
+        'Loading',
         'Notify',
         'AppFullscreen'
       ]
@@ -64,9 +67,9 @@ module.exports = function (ctx) {
     build: {
       env: {
         API: ctx.dev
-          ? '"http://local.pulsar.fr:8888/"'
+          ? 'http://local.pulsar.fr:8888/'
           // ? '"https://manga.lykaos.fr/"'
-          : '"https://manga.lykaos.fr/"'
+          : 'https://manga.lykaos.fr/'
       },
       scopeHoisting: true,
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -78,20 +81,16 @@ module.exports = function (ctx) {
       // extractCSS: false,
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
-      extendWebpack (cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-          options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish')
-          }
-        })
+      extendWebpack (cfg, { isServer, isClient }) {
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src/')
         }
+      },
+      chainWebpack (chain) {
+        chain
+          .plugin('eslint-webpack-plugin')
+          .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }])
       }
     },
 
@@ -195,4 +194,4 @@ module.exports = function (ctx) {
       }
     }
   }
-}
+})
