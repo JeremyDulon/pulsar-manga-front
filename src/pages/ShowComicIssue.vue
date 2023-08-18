@@ -9,6 +9,7 @@
           <div class="text-h6">{{ currentPage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
         </q-toolbar-title>
         <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="$q.fullscreen.toggle()"/>
+        <q-btn icon="fa fa-forward-step" @click="goToNextComicIssue"/>
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
     </q-header>
@@ -18,6 +19,7 @@
                     animated
                     swipeable
                     fullscreen
+                    no-route-fullscreen-exit
                     :transition-next="trNext"
                     :transition-prev="trPrev"
                     :vertical="userConfigStore.readSettings.vertical"
@@ -104,26 +106,35 @@ export default {
   },
   async mounted () {
     document.addEventListener('keyup', this.handleArrows)
-    this.comicIssueStore.doFetchComicIssue({ id: this.$route.params.id })
-      .then(() => {
-        let page = 1
-        this.comicIssue = this.comicIssueStore.item
-        this.comicLanguageId = this.comicIssue.comicLanguage.id
-        if (this.comicIssue.comicPages.length !== 0) {
-          let favorite = this.favoriteStore.getFavorite(this.comicIssue.comicLanguage)
-          if (favorite && favorite.lastPage && favorite.lastComicIssue && favorite.lastComicIssue.id === this.comicIssue.id) {
-            page = favorite.lastPage
-          }
-          this.comicPages = this.comicIssue.comicPages
-          this.changeSlide(page)
-          this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
-          this.lastNumber = _.maxBy(this.comicPages, (i) => i.number).number
-        }
-      })
+    this.doMount()
   },
   methods: {
+    doMount () {
+      this.comicIssueStore.doFetchComicIssue({ id: this.$route.params.id })
+        .then(() => {
+          let page = 1
+          this.comicIssue = this.comicIssueStore.item
+          this.comicLanguageId = this.comicIssue.comicLanguage.id
+          if (this.comicIssue.comicPages.length !== 0) {
+            let favorite = this.favoriteStore.getFavorite(this.comicIssue.comicLanguage)
+            if (favorite && favorite.lastPage && favorite.lastComicIssue && favorite.lastComicIssue.id === this.comicIssue.id) {
+              page = favorite.lastPage
+            }
+            this.comicPages = this.comicIssue.comicPages
+            this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
+            this.lastNumber = _.maxBy(this.comicPages, (i) => i.number).number
+            this.changeSlide(page)
+          }
+        })
+        .then(() => {
+          this.comicIssueStore.doFetchNextComicIssue({ id: this.$route.params.id })
+        })
+    },
     goToComic () {
       this.$router.push({ name: 'comic', params: { id: this.comicLanguageId } })
+    },
+    goToNextComicIssue () {
+      this.$router.push({ name: 'comicIssue', params: { id: this.comicIssueStore.nextItem.id } })
     },
     handleArrows (e) {
       const key = e.key
@@ -171,6 +182,12 @@ export default {
       handler: function (newVal) {
         this.updateReadPage(newVal)
       }
+    },
+    '$route': {
+      handler: function () {
+        this.doMount()
+      },
+      deep: true
     }
   }
 }

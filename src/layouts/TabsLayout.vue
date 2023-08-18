@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf" v-if="authStore.isLogged">
     <q-page-container>
-      <router-view />
+      <router-view :key="$route.fullPath" />
     </q-page-container>
     <q-footer class="text-primary">
       <q-tabs active-color="amber-5" indicator-color="transparent" class="text-grey">
