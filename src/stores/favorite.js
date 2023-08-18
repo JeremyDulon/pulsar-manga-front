@@ -51,7 +51,6 @@ export const useFavoriteStore = defineStore('favorite', {
 
       let method = 'POST'
       let endpoint = API_PREFIX + 'user_comic_languages'
-      console.log(this.list)
       let favoriteComic = this.list.find(fav => fav.comicLanguage['@id'] === options.body.comicLanguage)
       if (favoriteComic !== undefined) {
         method = 'PUT'

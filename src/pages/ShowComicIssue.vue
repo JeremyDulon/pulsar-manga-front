@@ -20,7 +20,7 @@
                     fullscreen
                     :transition-next="trNext"
                     :transition-prev="trPrev"
-                    :vertical="readMode === 'ttb'"
+                    :vertical="userConfigStore.readSettings.vertical"
                     ref="chapterSlider">
           <q-carousel-slide v-for="page in orderedPages"
                             :key="page.id"
@@ -52,8 +52,7 @@
     <q-dialog v-model="showSettings">
       <q-card>
         <q-card-section>
-<!--          <user-config />-->
-          <span>UserConfig</span>
+          <user-config />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -65,9 +64,12 @@ import _ from 'lodash'
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useComicIssueStore } from '@/stores/comicIssue'
+import { useUserConfigStore } from '@/stores/userConfig'
+import UserConfig from 'pages/UserConfig.vue'
 
 export default {
   name: 'ShowComicIssue',
+  components: { UserConfig },
   data () {
     return {
       currentSlideName: null,
@@ -75,24 +77,23 @@ export default {
       lastNumber: null,
       navigation: false,
       showSettings: false,
-      readMode: 'ltr',
       comicIssue: null,
       comicPages: [],
       comicLanguageId: null
     }
   },
   computed: {
-    ...mapStores(useComicIssueStore, useFavoriteStore),
+    ...mapStores(useComicIssueStore, useFavoriteStore, useUserConfigStore),
     orderedPages () {
       return _.orderBy(this.comicPages, ['number'], [
-        this.readMode === 'ltr' || this.readMode === 'ttb' ? 'asc' : 'desc'
+        this.userConfigStore.readSettings.read === 'ltr' || this.userConfigStore.readSettings.read === 'ttb' ? 'asc' : 'desc'
       ])
     },
     trNext () {
-      return this.readMode === 'ttb' ? 'slide-up' : 'slide-left'
+      return this.userConfigStore.readSettings.read === 'ttb' ? 'slide-up' : 'slide-left'
     },
     trPrev () {
-      return this.readMode === 'ttb' ? 'slide-down' : 'slide-right'
+      return this.userConfigStore.readSettings.read === 'ttb' ? 'slide-down' : 'slide-right'
     },
     currentPage () {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
@@ -134,10 +135,10 @@ export default {
           this.goToNext()
           break
         case 'ArrowLeft':
-          this.readMode === 'rtl' ? this.goToNext() : this.goToPrev()
+          this.userConfigStore.readSettings.read === 'rtl' ? this.goToNext() : this.goToPrev()
           break
         case 'ArrowRight':
-          this.readMode === 'rtl' ? this.goToPrev() : this.goToNext()
+          this.userConfigStore.readSettings.read === 'rtl' ? this.goToPrev() : this.goToNext()
           break
       }
     },

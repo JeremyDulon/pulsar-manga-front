@@ -16,7 +16,6 @@
 
 <script>
 import ComicLanguageList from 'components/comic/ComicLanguageList'
-import { getFilteredList } from '@/utils/_comic'
 import _ from 'lodash'
 export default {
   name: 'SearchManga',
@@ -29,7 +28,7 @@ export default {
     }
   },
   async created () {
-    this.mangaList = await getFilteredList()
+    alert('todo')
   },
   watch: {
     text: {

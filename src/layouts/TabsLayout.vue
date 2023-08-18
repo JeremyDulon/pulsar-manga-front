@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpr lFf" v-if="authStore.isLogged">
+  <q-layout view="hHh lpR fFf" v-if="authStore.isLogged">
     <q-page-container>
       <router-view />
     </q-page-container>
