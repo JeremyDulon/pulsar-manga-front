@@ -1,34 +1,22 @@
 <template>
   <q-page>
-    <comic-language-list :comic-language-list="comicLanguageList" />
+    <comic-language-list :comic-language-list="comicStore.list" />
   </q-page>
 </template>
 
 <script>
 import ComicLanguageList from 'components/comic/ComicLanguageList'
-import {
-  mapActions,
-  mapGetters
-} from 'vuex'
+import { mapStores } from 'pinia'
+import { useComicStore } from '@/stores/comic'
 
 export default {
   name: 'ListComic',
   components: { ComicLanguageList },
-  created () {
-    this.onCreated()
-  },
-  methods: {
-    ...mapActions({
-      getComicLanguageList: 'comic/comicLanguage/retrieveListItems'
-    }),
-    onCreated () {
-      this.getComicLanguageList()
-    }
+  mounted () {
+    this.comicStore.doFetchComicLanguageList()
   },
   computed: {
-    ...mapGetters({
-      comicLanguageList: 'comic/comicLanguage/items'
-    })
+    ...mapStores(useComicStore)
   }
 }
 </script>

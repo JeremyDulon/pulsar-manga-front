@@ -51,7 +51,7 @@ export const fetchApi = function ({ path, resource }, options = {}) {
   })
 
   const authStore = useAuthStore()
-  let token = authStore.token
+  let token = authStore.getToken()
   if (token && token.token) {
     options.headers.set('Authorization', `Bearer ${token.token}`)
   }
@@ -99,6 +99,7 @@ const handleFetchError = async (url, response) => {
   const token = authStore.token
   if (response.status === 401 && token && token.refresh_token) {
     authStore.doRefreshToken(token).catch(() => debouncedLogout())
+    throw new Error('Token expired')
   }
 
   if (response.status >= 400) {

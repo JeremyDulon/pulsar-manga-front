@@ -3,9 +3,9 @@
     <q-header v-if="navigation || comicPages.length === 0" class="bg-black" style="z-index: 9999">
       <q-toolbar>
         <q-btn
-          v-go-back="{ name: 'comic', params: { id: comicLanguageId } }"
+          @click="goToComic"
           size="lg" icon="fa fa-angle-left" color="black" />
-        <q-toolbar-title>
+        <q-toolbar-title v-if="comicIssue">
           <div class="text-h6">{{ currentPage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
         </q-toolbar-title>
         <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="$q.fullscreen.toggle()"/>
@@ -60,16 +60,11 @@
   </div>
 </template>
 <script>
-import {
-  mapActions,
-  mapGetters
-} from 'vuex'
 import _ from 'lodash'
 
-// import { createNamespacedHelpers } from 'vuex'
-// import UserConfig from 'pages/UserConfig'
-// const storeUserConfig = createNamespacedHelpers('userConfig')
-// const storeUser = createNamespacedHelpers('user')
+import { mapStores } from 'pinia'
+import { useFavoriteStore } from '@/stores/favorite'
+import { useComicIssueStore } from '@/stores/comicIssue'
 
 export default {
   name: 'ShowComicIssue',
@@ -81,15 +76,13 @@ export default {
       navigation: false,
       showSettings: false,
       readMode: 'ltr',
+      comicIssue: null,
       comicPages: [],
       comicLanguageId: null
     }
   },
   computed: {
-    ...mapGetters({
-      comicIssue: 'comic/comicLanguage/comicIssue/item',
-      userComicLanguage: 'user/comicLanguage/item'
-    }),
+    ...mapStores(useComicIssueStore, useFavoriteStore),
     orderedPages () {
       return _.orderBy(this.comicPages, ['number'], [
         this.readMode === 'ltr' || this.readMode === 'ttb' ? 'asc' : 'desc'
@@ -108,15 +101,17 @@ export default {
   unmounted () {
     document.addEventListener('keyup', this.handleArrows)
   },
-  async created () {
+  async mounted () {
     document.addEventListener('keyup', this.handleArrows)
-    await this.getComicIssue({ id: this.$route.params.id })
+    this.comicIssueStore.doFetchComicIssue({ id: this.$route.params.id })
       .then(() => {
         let page = 1
+        this.comicIssue = this.comicIssueStore.item
         this.comicLanguageId = this.comicIssue.comicLanguage.id
         if (this.comicIssue.comicPages.length !== 0) {
-          if (this.userComicLanguage.lastComicIssue['@id'] === this.comicIssue['@id'] && this.userComicLanguage.lastPage) {
-            page = this.userComicLanguage.lastPage
+          let favorite = this.favoriteStore.getFavorite(this.comicIssue.comicLanguage)
+          if (favorite && favorite.lastPage && favorite.lastComicIssue && favorite.lastComicIssue.id === this.comicIssue.id) {
+            page = favorite.lastPage
           }
           this.comicPages = this.comicIssue.comicPages
           this.changeSlide(page)
@@ -126,13 +121,9 @@ export default {
       })
   },
   methods: {
-    ...mapActions({
-      getComicIssue: 'comic/comicLanguage/comicIssue/getItem',
-      setFavorite: 'user/comicLanguage/setUserFavorite'
-    }),
-    // ...storeUser.mapActions({
-    //   readPage: 'readPage'
-    // }),
+    goToComic () {
+      this.$router.push({ name: 'comic', params: { id: this.comicLanguageId } })
+    },
     handleArrows (e) {
       const key = e.key
       switch (key) {
@@ -165,7 +156,7 @@ export default {
       this.changeSlide(page)
     },
     updateReadPage: _.debounce(async function (pageNumber) {
-      await this.setFavorite({
+      this.favoriteStore.doUpdateFavorite({
         body: {
           comicLanguage: this.comicIssue.comicLanguage['@id'],
           lastComicIssue: this.comicIssue['@id'],

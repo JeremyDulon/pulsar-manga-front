@@ -4,7 +4,7 @@ import SearchManga from 'pages/SearchManga.vue'
 import ShowComicIssue from 'pages/ShowComicIssue.vue'
 import NoLayout from 'layouts/NoLayout'
 import TabsLayout from 'layouts/TabsLayout'
-import FavoritesManga from 'pages/FavoritesManga' // Todo
+import ListFavoriteComicLanguage from 'pages/ListFavoriteComicLanguage'
 import UserConfig from 'pages/UserConfig'
 import Login from 'pages/Login'
 import Error404 from 'pages/Error404'
@@ -32,7 +32,7 @@ const routes = [
       {
         path: 'favorites',
         name: 'favorites',
-        component: FavoritesManga
+        component: ListFavoriteComicLanguage
       },
       {
         path: 'user-config',

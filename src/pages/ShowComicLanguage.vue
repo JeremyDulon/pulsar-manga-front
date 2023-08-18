@@ -99,36 +99,36 @@ import { plr } from '@/utils'
 import { todayDiff, dateFormatIso } from '@/utils/date'
 import _ from 'lodash'
 
-import {
-  mapActions,
-  mapGetters
-} from 'vuex'
+import { mapStores } from 'pinia'
+import { useFavoriteStore } from '@/stores/favorite'
+import { useComicStore } from '@/stores/comic'
 
 export default {
   name: 'ShowComicLanguage',
   data () {
     return {
       comic: {},
+      comicLanguage: {},
+      userComicLanguage: {},
       loading: true,
       sortDesc: false,
       lightHeader: false
     }
   },
-  async created () {
+  async mounted () {
     if (!this.$route.params.id) {
       this.goBack()
     }
-    await this.getComicLanguage({ id: this.$route.params.id })
-    if (this.comicLanguage) {
+    await this.comicStore.doFetchComicLanguage({ id: this.$route.params.id })
+    if (this.comicStore.item) {
+      this.comicLanguage = this.comicStore.item
       this.comic = this.comicLanguage.comic
       this.loading = false
     }
+
+    this.userComicLanguage = this.favoriteStore.getFavorite(this.comicLanguage)
   },
   methods: {
-    ...mapActions({
-      getComicLanguage: 'comic/comicLanguage/getItem',
-      setFavorite: 'user/comicLanguage/setUserFavorite'
-    }),
     plr: (str, sub) => plr(str, sub),
     issueClass (issue) {
       let classes = []
@@ -156,16 +156,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      comicLanguage: 'comic/comicLanguage/item',
-      userComicLanguage: 'user/comicLanguage/item',
-      userComicLanguages: 'user/comicLanguage/items'
-    }),
-    isFavorite () {
-      return this.userComicLanguage ? this.userComicLanguage.favorite : false
-    },
+    ...mapStores(useComicStore, useFavoriteStore),
     actions () {
-      return [
+      let favoriteComic = this.favoriteStore.getFavorite(this.comicLanguage)
+      let actions = [
         {
           label: 'Sort',
           icon: this.sortIcon,
@@ -174,19 +168,24 @@ export default {
         {
           label: 'Favorite',
           icon: this.favoriteIcon,
-          action: () => this.setFavorite({
+          action: () => this.favoriteStore.doUpdateFavorite({
             body: {
               comicLanguage: this.comicLanguage['@id'],
-              favorite: !this.isFavorite
+              favorite: favoriteComic ? !favoriteComic.favorite : true
             }
           })
-        },
-        {
-          label: `Resume (c: ${this.userComicLanguage.lastComicIssue.number} - p: ${this.userComicLanguage.lastPage})`,
-          icon: 'fas fa-bookmark',
-          action: () => this.goToIssue(this.userComicLanguage.lastComicIssue.id)
         }
       ]
+
+      if (favoriteComic && favoriteComic.lastComicIssue) {
+        actions.push({
+          label: `Resume (c: ${favoriteComic.lastComicIssue.number} - p: ${favoriteComic.lastPage})`,
+          icon: 'fas fa-bookmark',
+          action: () => this.goToIssue(favoriteComic.lastComicIssue.id)
+        })
+      }
+
+      return actions
     },
     adminActions () {
       return [
@@ -211,7 +210,8 @@ export default {
       return 'fas fa-' + (this.sortDesc ? 'sort-numeric-down-alt' : 'sort-numeric-down')
     },
     favoriteIcon () {
-      return (this.isFavorite ? 'fas' : 'far') + ' fa-heart'
+      let favoriteComic = this.favoriteStore.getFavorite(this.comicLanguage)
+      return (favoriteComic && favoriteComic.favorite ? 'fas' : 'far') + ' fa-heart'
     },
     latestIssue () {
       return this.sortedIssues.length ? _.maxBy(this.sortedIssues, 'number').number : null
