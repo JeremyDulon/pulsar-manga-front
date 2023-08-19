@@ -30,7 +30,8 @@
                             :img-src="page.file && page.file.url"
                             :draggable="false"
                             class="chapter-slide"
-                            @click="navigation = !navigation"/>
+                            @click="navigation = !navigation"
+                            @touchstart="navigation = !navigation"/>
           <template v-slot:control v-if="navigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
               <q-slider v-model="currentPage"
