@@ -69,7 +69,7 @@ module.exports = configure(function (ctx) {
         API: ctx.dev
           ? 'http://local.pulsar.fr:8888/'
           // ? '"https://manga.lykaos.fr/"'
-          : 'https://manga.lykaos.fr/'
+          : 'https://api-manga.lykaos.fr/'
       },
       scopeHoisting: true,
       vueRouterMode: 'hash', // available values: 'hash', 'history'
