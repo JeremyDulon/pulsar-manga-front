@@ -63,6 +63,7 @@
 <script>
 import _ from 'lodash'
 
+import { useQuasar } from 'quasar'
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useComicIssueStore } from '@/stores/comicIssue'
@@ -102,6 +103,8 @@ export default {
     }
   },
   unmounted () {
+    const $q = useQuasar()
+    $q.fullscreen.exit()
     document.addEventListener('keyup', this.handleArrows)
   },
   async mounted () {
@@ -109,8 +112,7 @@ export default {
     this.doMount()
   },
   methods: {
-    toggleNavigation (e) {
-      console.log(e)
+    toggleNavigation () {
       this.showNavigation = !this.showNavigation
     },
     doMount () {
