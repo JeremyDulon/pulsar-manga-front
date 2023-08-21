@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-header v-if="navigation || comicPages.length === 0" class="bg-black" style="z-index: 9999">
+    <q-header v-if="showNavigation || comicPages.length === 0" class="bg-black" style="z-index: 9999">
       <q-toolbar>
         <q-btn
           @click="goToComic"
@@ -22,7 +22,7 @@
                     no-route-fullscreen-exit
                     :transition-next="trNext"
                     :transition-prev="trPrev"
-                    :vertical="userConfigStore.readSettings.vertical"
+                    :vertical="userConfigStore.readMode === 'ttb'"
                     ref="chapterSlider">
           <q-carousel-slide v-for="page in orderedPages"
                             :key="page.id"
@@ -30,9 +30,8 @@
                             :img-src="page.file && page.file.url"
                             :draggable="false"
                             class="chapter-slide"
-                            @click="navigation = !navigation"
-                            @touchstart="navigation = !navigation"/>
-          <template v-slot:control v-if="navigation">
+                            @click="toggleNavigation" />
+          <template v-slot:control v-if="showNavigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
               <q-slider v-model="currentPage"
                         label
@@ -78,7 +77,7 @@ export default {
       currentSlideName: null,
       firstNumber: null,
       lastNumber: null,
-      navigation: false,
+      showNavigation: false,
       showSettings: false,
       comicIssue: null,
       comicPages: [],
@@ -89,14 +88,14 @@ export default {
     ...mapStores(useComicIssueStore, useFavoriteStore, useUserConfigStore),
     orderedPages () {
       return _.orderBy(this.comicPages, ['number'], [
-        this.userConfigStore.readSettings.read === 'ltr' || this.userConfigStore.readSettings.read === 'ttb' ? 'asc' : 'desc'
+        this.userConfigStore.readMode === 'ltr' || this.userConfigStore.readMode === 'ttb' ? 'asc' : 'desc'
       ])
     },
     trNext () {
-      return this.userConfigStore.readSettings.read === 'ttb' ? 'slide-up' : 'slide-left'
+      return this.userConfigStore.readMode === 'ttb' ? 'slide-up' : 'slide-left'
     },
     trPrev () {
-      return this.userConfigStore.readSettings.read === 'ttb' ? 'slide-down' : 'slide-right'
+      return this.userConfigStore.readMode === 'ttb' ? 'slide-down' : 'slide-right'
     },
     currentPage () {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
@@ -110,6 +109,10 @@ export default {
     this.doMount()
   },
   methods: {
+    toggleNavigation (e) {
+      console.log(e)
+      this.showNavigation = !this.showNavigation
+    },
     doMount () {
       this.comicIssueStore.doFetchComicIssue({ id: this.$route.params.id })
         .then(() => {
@@ -147,10 +150,10 @@ export default {
           this.goToNext()
           break
         case 'ArrowLeft':
-          this.userConfigStore.readSettings.read === 'rtl' ? this.goToNext() : this.goToPrev()
+          this.userConfigStore.readMode === 'rtl' ? this.goToNext() : this.goToPrev()
           break
         case 'ArrowRight':
-          this.userConfigStore.readSettings.read === 'rtl' ? this.goToPrev() : this.goToNext()
+          this.userConfigStore.readMode === 'rtl' ? this.goToPrev() : this.goToNext()
           break
       }
     },
