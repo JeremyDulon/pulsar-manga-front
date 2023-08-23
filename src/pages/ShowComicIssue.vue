@@ -118,23 +118,37 @@ export default {
     doMount () {
       this.comicIssueStore.doFetchComicIssue({ id: this.$route.params.id })
         .then(() => {
-          let page = 1
           this.comicIssue = this.comicIssueStore.item
           this.comicLanguageId = this.comicIssue.comicLanguage.id
-          if (this.comicIssue.comicPages.length !== 0) {
-            let favorite = this.favoriteStore.getFavorite(this.comicIssue.comicLanguage)
-            if (favorite && favorite.lastPage && favorite.lastComicIssue && favorite.lastComicIssue.id === this.comicIssue.id) {
-              page = favorite.lastPage
-            }
-            this.comicPages = this.comicIssue.comicPages
-            this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
-            this.lastNumber = _.maxBy(this.comicPages, (i) => i.number).number
-            this.changeSlide(page)
-          }
+          this.handlePages()
         })
         .then(() => {
           this.comicIssueStore.doFetchNextComicIssue({ id: this.$route.params.id })
         })
+    },
+    handlePages () {
+      let page = 1
+      if (this.comicIssue.comicPages.length !== 0) {
+        let favorite = this.favoriteStore.getFavorite(this.comicIssue.comicLanguage)
+        if (favorite && favorite.lastPage && favorite.lastComicIssue && favorite.lastComicIssue.id === this.comicIssue.id) {
+          page = favorite.lastPage
+        }
+        this.comicPages = this.comicIssue.comicPages
+        this.preloadPages()
+        this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
+        this.lastNumber = _.maxBy(this.comicPages, (i) => i.number).number
+        this.changeSlide(page)
+      }
+    },
+    preloadPages () {
+      if (this.comicPages.length !== 0) {
+        this.comicPages.forEach((page) => {
+          if (page.file) {
+            let img = new Image()
+            img.src = page.file.url
+          }
+        })
+      }
     },
     goToComic () {
       this.$router.push({ name: 'comic', params: { id: this.comicLanguageId } })
@@ -181,7 +195,7 @@ export default {
           lastPage: pageNumber
         }
       })
-    }, 1000)
+    }, 3000)
   },
   watch: {
     currentPage: {

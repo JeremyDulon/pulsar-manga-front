@@ -6,7 +6,7 @@
           <q-btn
             icon="fa fa-chevron-left"
             flat dense
-            @click="goBack()" />
+            @click="goToHome()" />
           <q-img class="col-xs-3"
                  v-if="!lightHeader && comic && comic.image"
                  :src="comic.image && comic.image.url"
@@ -142,6 +142,9 @@ export default {
     },
     goBack () {
       this.$router.back()
+    },
+    goToHome () {
+      this.$router.push({ name: 'home' })
     },
     goToIssue (id) {
       let params = { id: id }

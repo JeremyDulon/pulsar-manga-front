@@ -39,7 +39,7 @@ export const useAuthStore = defineStore('auth', {
       }
       return postFetchApi({ path: API_PREFIX + 'token/refresh' }, { body: { refresh_token: token.refresh_token } })
         .then((response) => {
-          console.log('doRefresh', response)
+          this.saveToken(response)
         })
     },
     doLogout () {
