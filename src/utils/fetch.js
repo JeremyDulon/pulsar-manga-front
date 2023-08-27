@@ -1,4 +1,4 @@
-import { API_ENTRYPOINT } from '@/consts/api'
+import { API_ENTRYPOINT, API_PREFIX } from '@/consts/api'
 import { toast } from '@/utils/ui'
 import _ from 'lodash'
 import SubmissionError from '@/error/SubmissionError'
@@ -15,7 +15,7 @@ const debouncedLogout = _.debounce(async () => {
   authStore.doLogout()
 }, 500)
 
-export const fetchApi = function ({ path, resource }, options = {}) {
+export const fetchApi = async function ({ path, resource }, options = {}) {
   if (typeof options.headers === 'undefined') {
     Object.assign(options, { headers: new Headers() })
   }
@@ -50,18 +50,39 @@ export const fetchApi = function ({ path, resource }, options = {}) {
     // credentials: 'include', // when credentials needed
   })
 
+  const entryPoint = API_ENTRYPOINT + (API_ENTRYPOINT.endsWith('/') ? '' : '/')
+
   const authStore = useAuthStore()
   let token = authStore.getToken()
   if (token && token.token) {
+    let now = Math.floor(Date.now() / 1000)
+    if (token.expiration <= now) {
+      const refreshTokenUrl = new URL(API_PREFIX + 'token/refresh', entryPoint)
+      const refreshTokenHeaders = new Headers()
+      refreshTokenHeaders.set('Content-Type', MIME_TYPE)
+      const refreshTokenOptions = {
+        mode: 'cors',
+        headers: refreshTokenHeaders,
+        method: 'POST',
+        body: JSON.stringify({ refresh_token: token.refresh_token })
+      }
+      let refreshTokenResponse = await fetch(refreshTokenUrl, refreshTokenOptions)
+      if (refreshTokenResponse.ok) {
+        const refreshTokenJson = await refreshTokenResponse.json()
+        token = refreshTokenJson
+        authStore.saveToken(refreshTokenJson)
+      }
+    }
+
     options.headers.set('Authorization', `Bearer ${token.token}`)
   }
-
-  const entryPoint = API_ENTRYPOINT + (API_ENTRYPOINT.endsWith('/') ? '' : '/')
 
   const url = new URL(path, entryPoint)
 
   return fetch(url, options).then((response) => {
-    if (!response.ok) return handleFetchError(url, response)
+    if (!response.ok) {
+      return handleFetchError(url, response)
+    }
 
     if (response.ok) return response.json()
 
@@ -90,20 +111,23 @@ export const postFetchApi = function ({ path, resource }, options = { body: {} }
 }
 
 const handleFetchError = async (url, response) => {
-  if (response.status === 401 && url.pathname === '/api/token/refresh') {
+  if (response.status === 401) {
     debouncedLogout()
     throw new Error('Refresh Token expired')
-  }
-
-  const authStore = useAuthStore()
-  const token = authStore.token
-  if (response.status === 401 && token && token.refresh_token) {
-    authStore.doRefreshToken(token).catch(() => debouncedLogout())
-    throw new Error('Token expired')
   }
 
   if (response.status >= 400) {
     toast.negative(response.statusText)
     throw new Error(response.statusText)
   }
+}
+
+export const extractJWTData = (jwtToken) => {
+  let base64Url = jwtToken.split('.')[1]
+  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+  let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  }).join(''))
+
+  return JSON.parse(jsonPayload)
 }

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { postFetchApi } from '@/utils/fetch'
+import { extractJWTData, postFetchApi } from '@/utils/fetch'
 import { API_PREFIX } from '@/consts/api'
 import { toast } from '@/utils/ui'
 import { useUserStore } from '@/stores/user'
@@ -25,21 +25,14 @@ export const useAuthStore = defineStore('auth', {
     doLogin (credentials) {
       return postFetchApi({ path: API_PREFIX + 'login' }, { body: credentials })
         .then((response) => {
+          let extractedJWT = extractJWTData(response.token)
+          response.expiration = extractedJWT.exp
           this.saveToken(response)
           toast.positive('Bienvenue')
         })
         .then(() => {
           const userStore = useUserStore()
           userStore.doFetchUser()
-        })
-    },
-    doRefreshToken (token) {
-      if (!token) {
-        throw new Error('Vous devez vous reconnecter')
-      }
-      return postFetchApi({ path: API_PREFIX + 'token/refresh' }, { body: { refresh_token: token.refresh_token } })
-        .then((response) => {
-          this.saveToken(response)
         })
     },
     doLogout () {
