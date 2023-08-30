@@ -69,6 +69,7 @@
                   @click="goToIssue(issue.id)">
                 <q-card
                     :class="issueClass(issue)">
+                  <q-badge v-if="isRecentIssue(issue)" color="red" floating>NEW</q-badge>
                   <q-card-section>
                     <div class="col">
                       <div>Ch. {{ issue.number }}</div>
@@ -96,13 +97,14 @@
 </template>
 <script>
 import { plr } from '@/utils'
-import { todayDiff, dateFormatIso } from '@/utils/date'
+import { todayDiff, dateFormatIso, getDaysDiffFromNow } from '@/utils/date'
 import _ from 'lodash'
 
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useComicStore } from '@/stores/comic'
 import { ISSUES_SORT_DESC, useUserConfigStore } from '@/stores/userConfig'
+import { RECENT_ISSUES_DAYS_LIMIT } from '@/consts/app'
 
 export default {
   name: 'ShowComicLanguage',
@@ -165,6 +167,9 @@ export default {
     },
     chapterDateDiff (d) {
       return dateFormatIso(d)
+    },
+    isRecentIssue (issue) {
+      return getDaysDiffFromNow(issue.date) <= RECENT_ISSUES_DAYS_LIMIT
     }
   },
   computed: {

@@ -5,7 +5,6 @@ import * as dateConsts from '@/consts/date'
 const { getDateDiff, formatDate } = date
 
 export const relativeDiff = (d1, d2) => {
-  console.log(d1, d2)
   let _h = getDateDiff(d1, d2, 'hours')
   if (_h < 24) return _h + ' hours ago'
   let _d = getDateDiff(d1, d2, 'days')
@@ -16,6 +15,10 @@ export const relativeDiff = (d1, d2) => {
   // d1 = addToDate(d1, { year: _y })
   // _m = getDateDiff(d1, d2, 'months')
   return [_y, plz('year', _y), 'ago'].join(' ')
+}
+
+export const getDaysDiffFromNow = (date) => {
+  return getDateDiff(new Date(), date, 'days')
 }
 
 export const todayDiff = (_d) => relativeDiff(new Date(), _d)
