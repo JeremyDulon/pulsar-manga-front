@@ -102,6 +102,7 @@ import _ from 'lodash'
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useComicStore } from '@/stores/comic'
+import { ISSUES_SORT_DESC, useUserConfigStore } from '@/stores/userConfig'
 
 export default {
   name: 'ShowComicLanguage',
@@ -126,6 +127,13 @@ export default {
       this.loading = false
     }
 
+    if (this.userConfigStore !== void 0) {
+      this.sortDesc = this.userConfigStore.issuesSortDesc
+      this.userConfigStore.$subscribe((mutation, state) => {
+        localStorage.setItem(ISSUES_SORT_DESC, JSON.stringify(state.issuesSortDesc))
+      })
+    }
+
     this.userComicLanguage = this.favoriteStore.getFavorite(this.comicLanguage)
   },
   methods: {
@@ -139,6 +147,7 @@ export default {
     },
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
+      this.userConfigStore.issuesSortDesc = this.sortDesc
     },
     goBack () {
       this.$router.back()
@@ -159,7 +168,7 @@ export default {
     }
   },
   computed: {
-    ...mapStores(useComicStore, useFavoriteStore),
+    ...mapStores(useComicStore, useFavoriteStore, useUserConfigStore),
     actions () {
       let favoriteComic = this.favoriteStore.getFavorite(this.comicLanguage)
       let actions = [
