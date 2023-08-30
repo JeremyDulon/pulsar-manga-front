@@ -25,12 +25,7 @@
             {{ favoriteComicLanguage.comicLanguage.comic.title }}
           </q-tooltip>
         </q-item-label>
-        <div>
-          <img
-            :src="flagPath"
-            style="max-width: 20px"
-          >
-        </div>
+        <pulsar-flag :language="favoriteComicLanguage.comicLanguage.language" />
         <div>
           <span v-if="lastComicIssue" class="text-weight-medium">
             #{{ lastComicIssue.number }}
@@ -60,9 +55,11 @@
 // const storeUser = createNamespacedHelpers('user')
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
+import PulsarFlag from 'components/core/PulsarFlag.vue'
 
 export default {
   name: 'FavoriteCard',
+  components: { PulsarFlag },
   props: {
     favoriteComicLanguage: {
       type: Object
@@ -99,9 +96,6 @@ export default {
     latestChapter () {
       return { number: 0 }
       // return this.userMangaPlatform.manga_platform.latest_chapter
-    },
-    flagPath () {
-      return require('assets/flags/' + this.favoriteComicLanguage.comicLanguage.language.toLowerCase() + '.svg')
     }
     // manga () {
     //   return this.userMangaPlatform.manga_platform.manga

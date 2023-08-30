@@ -14,15 +14,18 @@
     <q-item class="q-py-sm q-px-none manga-label">
       <q-item-section>
         <q-item-label :lines="1" class="manga-title text-uppercase">{{ comicLanguage.comic.title }}</q-item-label>
-        <q-item-label :lines="1" class="manga-title text-uppercase">{{ comicLanguage.language }}</q-item-label>
+        <pulsar-flag :language="comicLanguage.language" />
       </q-item-section>
     </q-item>
   </q-card>
 </template>
 <script>
 
+import PulsarFlag from 'components/core/PulsarFlag.vue'
+
 export default {
   name: 'ComicLanguageCard',
+  components: { PulsarFlag },
   props: {
     comicLanguage: {
       type: Object

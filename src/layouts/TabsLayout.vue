@@ -9,7 +9,6 @@
         <q-route-tab icon="fas fa-search" :to="{ name: 'search' }" />
         <q-route-tab icon="fas fa-star" :to="{ name: 'favorites' }" />
         <q-route-tab icon="fas fa-cog" :to="{ name: 'userConfig' }" />
-        <q-route-tab icon="fas fa-th-list" to="/" />
         <q-tab icon="fas fa-sign-out-alt" v-on:click="logout" />
       </q-tabs>
     </q-footer>
