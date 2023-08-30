@@ -1,9 +1,8 @@
 <template>
   <div>
-    <img
+    <q-img
       :src="flagPath"
-      :style="'max-width: ' + width"
-    >
+      :style="'max-width: ' + width"/>
   </div>
 </template>
 
