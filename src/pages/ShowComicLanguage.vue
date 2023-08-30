@@ -10,7 +10,7 @@
           <q-img class="col-xs-3"
                  v-if="!lightHeader && comic && comic.image"
                  :src="comic.image && comic.image.url"
-                 contain style="max-height: 100px; max-width: 100px;" />
+                 fit="contain" style="max-height: 100px; max-width: 100px;" />
           <q-toolbar-title v-if="comic && comicLanguage">
             <q-item-label class="text-h6">{{ comic.title }}</q-item-label>
             <q-item-label class="text-subtitle2">{{ comicLanguage.language }}</q-item-label>

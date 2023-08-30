@@ -8,7 +8,7 @@
 <!--        {{ latestChapterDate }}-->
       </q-badge>
       <q-img :src="favoriteComicLanguage.comicLanguage.comic.image && favoriteComicLanguage.comicLanguage.comic.image.url"
-             :contain="false"
+             fit="contain"
              :ratio="1"
              class="manga-img col-3">
         <template v-slot:error>
