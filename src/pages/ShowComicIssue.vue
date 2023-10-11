@@ -8,13 +8,25 @@
         <q-toolbar-title v-if="comicIssue">
           <div class="text-h6">{{ currentPage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
         </q-toolbar-title>
-        <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="$q.fullscreen.toggle()"/>
+        <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen"/>
         <q-btn v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue"/>
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
     </q-header>
     <q-page-container>
       <q-page>
+        <q-page-sticky position="right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
+          <q-fab
+            v-if="showNavigation"
+            icon="keyboard_arrow_left"
+            direction="left"
+            color="amber-5"
+            v-touch-pan.prevent.mouse="dragActionFloatingBtn"
+          >
+            <q-fab-action :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
+            <q-fab-action v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
+          </q-fab>
+        </q-page-sticky>
         <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
                     animated
                     swipeable
@@ -63,7 +75,7 @@
 <script>
 import _ from 'lodash'
 
-import { useQuasar } from 'quasar'
+import { Loading, AppFullscreen } from 'quasar'
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useComicIssueStore } from '@/stores/comicIssue'
@@ -82,7 +94,14 @@ export default {
       showSettings: false,
       comicIssue: null,
       comicPages: [],
-      comicLanguageId: null
+      comicLanguageId: null,
+      actionFloatingBtn: {
+        draggable: false,
+        position: {
+          x: 20,
+          y: 20
+        }
+      }
     }
   },
   computed: {
@@ -103,8 +122,7 @@ export default {
     }
   },
   unmounted () {
-    const $q = useQuasar()
-    $q.fullscreen.exit()
+    AppFullscreen.exit()
     document.addEventListener('keyup', this.handleArrows)
   },
   async mounted () {
@@ -112,6 +130,17 @@ export default {
     this.doMount()
   },
   methods: {
+    dragActionFloatingBtn (ev) {
+      // this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
+      //
+      // this.actionFloatingBtn.position = {
+      //   x: this.actionFloatingBtn.position.x - ev.delta.x,
+      //   y: this.actionFloatingBtn.position.y - ev.delta.y
+      // }
+    },
+    toggleFullScreen () {
+      AppFullscreen.toggle()
+    },
     toggleNavigation () {
       this.showNavigation = !this.showNavigation
     },
@@ -121,6 +150,7 @@ export default {
           this.comicIssue = this.comicIssueStore.item
           this.comicLanguageId = this.comicIssue.comicLanguage.id
           this.handlePages()
+          Loading.hide()
         })
         .then(() => {
           this.comicIssueStore.doFetchNextComicIssue({ id: this.$route.params.id })
@@ -154,6 +184,9 @@ export default {
       this.$router.push({ name: 'comic', params: { id: this.comicLanguageId } })
     },
     goToNextComicIssue () {
+      Loading.show({
+        message: 'Loading next issue ...'
+      })
       this.$router.push({ name: 'comicIssue', params: { id: this.comicIssueStore.nextItem.id } })
     },
     handleArrows (e) {
@@ -214,6 +247,10 @@ export default {
 </script>
 
 <style>
+.q-page-sticky {
+  z-index: 99999;
+}
+
 .chapter-slide {
   background-repeat: no-repeat;
   background-attachment: fixed;

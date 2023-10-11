@@ -46,7 +46,10 @@ module.exports = configure(function (ctx) {
       all: 'auto',
 
       config: {
-        dark: true
+        dark: true,
+        loading: {
+          message: 'Loading...'
+        }
       },
       components: [],
       directives: [],
