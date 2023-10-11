@@ -23,8 +23,8 @@
             color="amber-5"
             v-touch-pan.prevent.mouse="dragActionFloatingBtn"
           >
-            <q-fab-action :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
-            <q-fab-action v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
+            <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
+            <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
           </q-fab>
         </q-page-sticky>
         <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
