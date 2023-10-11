@@ -15,18 +15,6 @@
     </q-header>
     <q-page-container>
       <q-page>
-        <q-page-sticky position="right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
-          <q-fab
-            v-if="showNavigation"
-            icon="keyboard_arrow_left"
-            direction="left"
-            color="amber-5"
-            v-touch-pan.prevent.mouse="dragActionFloatingBtn"
-          >
-            <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
-            <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
-          </q-fab>
-        </q-page-sticky>
         <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
                     animated
                     swipeable
@@ -61,6 +49,18 @@
             </div>
           </div>
         </q-responsive>
+        <q-page-sticky position="bottom-right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
+          <q-fab
+            v-if="showNavigation"
+            icon="keyboard_arrow_left"
+            direction="left"
+            color="amber-5"
+            v-touch-pan.prevent.mouse="dragActionFloatingBtn"
+          >
+            <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
+            <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
+          </q-fab>
+        </q-page-sticky>
       </q-page>
     </q-page-container>
     <q-dialog v-model="showSettings">
@@ -75,7 +75,7 @@
 <script>
 import _ from 'lodash'
 
-import { Loading, AppFullscreen } from 'quasar'
+import { Loading, AppFullscreen, Screen } from 'quasar'
 import { mapStores } from 'pinia'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useComicIssueStore } from '@/stores/comicIssue'
@@ -96,10 +96,10 @@ export default {
       comicPages: [],
       comicLanguageId: null,
       actionFloatingBtn: {
-        draggable: false,
+        draggable: true,
         position: {
           x: 20,
-          y: 20
+          y: Screen.height / 2
         }
       }
     }
@@ -131,12 +131,11 @@ export default {
   },
   methods: {
     dragActionFloatingBtn (ev) {
-      // this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
-      //
-      // this.actionFloatingBtn.position = {
-      //   x: this.actionFloatingBtn.position.x - ev.delta.x,
-      //   y: this.actionFloatingBtn.position.y - ev.delta.y
-      // }
+      this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
+
+      console.log(this.actionFloatingBtn.position, ev.delta)
+      this.actionFloatingBtn.position.x = this.actionFloatingBtn.position.x - ev.delta.x
+      this.actionFloatingBtn.position.y = this.actionFloatingBtn.position.y - ev.delta.y
     },
     toggleFullScreen () {
       AppFullscreen.toggle()
