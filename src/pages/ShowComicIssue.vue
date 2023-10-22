@@ -29,7 +29,10 @@
                             :name="page.id"
                             :img-src="page.file && page.file.url"
                             :draggable="false"
-                            class="chapter-slide"
+                            class="issue-slide"
+                            @touchstart="startZoom"
+                            @touchmove="moveZoom"
+                            @touchend="endZoom"
                             @click="toggleNavigation" />
           <template v-slot:control v-if="showNavigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
@@ -82,6 +85,15 @@ import { useComicIssueStore } from '@/stores/comicIssue'
 import { useUserConfigStore } from '@/stores/userConfig'
 import UserConfig from 'pages/UserConfig.vue'
 
+const defaultSlideZoomProperties = {
+  scale: 1,
+  start: {
+    x: null,
+    y: null,
+    distance: 0
+  }
+}
+
 export default {
   name: 'ShowComicIssue',
   components: { UserConfig },
@@ -101,7 +113,8 @@ export default {
           x: 20,
           y: Screen.height / 2
         }
-      }
+      },
+      slideZoomProperties: defaultSlideZoomProperties
     }
   },
   computed: {
@@ -130,6 +143,50 @@ export default {
     this.doMount()
   },
   methods: {
+    distanceZoom (event) {
+      return Math.hypot(
+        event.touches[0].pageX - event.touches[1].pageX,
+        event.touches[0].pageY - event.touches[1].pageY
+      )
+    },
+    startZoom (event) {
+      if (event.touches.length === 2) {
+        event.preventDefault()
+        this.slideZoomProperties.start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+        this.slideZoomProperties.start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+        this.slideZoomProperties.start.distance = this.distanceZoom(event);
+      }
+    },
+    moveZoom (event) {
+      if (event.touches.length === 2) {
+        event.preventDefault();
+
+        let scale
+        if (event.scale) {
+          scale = event.scale
+        } else {
+          const deltaDistance = this.distanceZoom(event)
+          scale = deltaDistance / this.slideZoomProperties.start.distance
+        }
+
+        this.slideZoomProperties.scale = Math.min(Math.max(1, scale), 4)
+        // Calculate how much the fingers have moved on the X and Y axis
+        let deltaX = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - this.slideZoomProperties.start.x) * 2; // x2 for accelarated movement
+        let deltaY = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - this.slideZoomProperties.start.y) * 2; // x2 for accelarated movement
+
+        let transformString = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${this.slideZoomProperties.scale})`;
+        const issueSlide = document.querySelector('.issue-slide')
+        issueSlide.style.transform = transformString;
+        issueSlide.style.WebkitTransform = transformString;
+        issueSlide.style.zIndex = "9999";
+      }
+    },
+    endZoom () {
+      const issueSlide = document.querySelector('.issue-slide')
+      issueSlide.style.transform = '';
+      issueSlide.style.WebkitTransform = '';
+      issueSlide.style.zIndex = '';
+    },
     dragActionFloatingBtn (ev) {
       this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
 
