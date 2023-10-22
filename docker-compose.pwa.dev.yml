@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: front.Dockerfile
+      target: develop-stage
+    ports:
+      - "7777:7777"
+    command: /bin/sh -c "quasar dev -m pwa"
+#    command: /bin/sh -c "tail -f /dev/null"
+    volumes:
+      - .:/src
