@@ -307,7 +307,7 @@ export default {
   z-index: 99999;
 }
 
-.chapter-slide {
+.issue-slide {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: contain;
