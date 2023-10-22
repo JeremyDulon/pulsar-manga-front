@@ -159,7 +159,7 @@ export default {
     },
     moveZoom (event) {
       if (event.touches.length === 2) {
-        event.preventDefault();
+        event.preventDefault()
 
         let scale
         if (event.scale) {
