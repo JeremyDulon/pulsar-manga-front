@@ -203,6 +203,7 @@ export default {
       }
     },
     endZoom () {
+      alert('endZoom')
       const issueSlide = document.querySelector('.issue-slide')
       issueSlide.style.transform = ''
       issueSlide.style.WebkitTransform = ''
