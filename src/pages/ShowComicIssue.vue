@@ -220,6 +220,7 @@ export default {
       AppFullscreen.toggle()
     },
     handleClick (event) {
+      event.preventDefault()
       this.clickCounter++
       this.currentEvent = event
 
