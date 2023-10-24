@@ -33,7 +33,7 @@
                             @touchstart="startZoom"
                             @touchmove="moveZoom"
                             @touchend="endZoom"
-                            @click="toggleNavigation" />
+                            @click="handleClick" />
           <template v-slot:control v-if="showNavigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
               <q-slider v-model="currentPage"
@@ -114,6 +114,9 @@ export default {
           y: Screen.height / 2
         }
       },
+      clickCounter: 0,
+      timer: null,
+      zoomEnabled: false,
       slideZoomProperties: defaultSlideZoomProperties
     }
   },
@@ -152,6 +155,7 @@ export default {
     startZoom (event) {
       if (event.touches.length === 2) {
         event.preventDefault()
+
         this.slideZoomProperties.start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
         this.slideZoomProperties.start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
         this.slideZoomProperties.start.distance = this.distanceZoom(event)
@@ -181,6 +185,23 @@ export default {
         issueSlide.style.zIndex = '9999'
       }
     },
+    updateZoom () {
+      const issueSlide = document.querySelector('.issue-slide')
+
+      if (this.slideZoomProperties.scale > 1) {
+        let deltaX = this.slideZoomProperties.start.x
+        let deltaY = this.slideZoomProperties.start.y
+        let transformString = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${this.slideZoomProperties.scale})`
+
+        issueSlide.style.transform = transformString
+        issueSlide.style.WebkitTransform = transformString
+        issueSlide.style.zIndex = '9999'
+      } else {
+        issueSlide.style.transform = ''
+        issueSlide.style.WebkitTransform = ''
+        issueSlide.style.zIndex = ''
+      }
+    },
     endZoom () {
       const issueSlide = document.querySelector('.issue-slide')
       issueSlide.style.transform = ''
@@ -197,8 +218,35 @@ export default {
     toggleFullScreen () {
       AppFullscreen.toggle()
     },
-    toggleNavigation () {
-      this.showNavigation = !this.showNavigation
+    handleClick (event) {
+      this.clickCounter++
+      this.currentEvent = event
+
+      if (!this.timer) {
+        this.timer = setTimeout(() => {
+          if (this.clickCounter === 1) {
+            this.showNavigation = !this.showNavigation
+          }
+
+          if (this.clickCounter === 2) {
+            this.zoomEnabled = !this.zoomEnabled
+
+            if (this.zoomEnabled === true) {
+              this.slideZoomProperties.start.x = (window.innerWidth / 2) - this.currentEvent.x
+              this.slideZoomProperties.start.y = (window.innerHeight / 2) - this.currentEvent.y
+              this.slideZoomProperties.scale = 2
+            } else {
+              this.slideZoomProperties.scale = 1
+            }
+
+            this.updateZoom()
+          }
+
+          this.clickCounter = 0
+          clearTimeout(this.timer)
+          this.timer = null
+        }, 200)
+      }
     },
     doMount () {
       this.comicIssueStore.doFetchComicIssue({ id: this.$route.params.id })
