@@ -17,7 +17,7 @@
       <q-page>
         <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
                     animated
-                    swipeable
+                    :swipeable="carouselSwipeable"
                     fullscreen
                     no-route-fullscreen-exit
                     :transition-next="trNext"
@@ -30,9 +30,8 @@
                             :img-src="page.file && page.file.url"
                             :draggable="false"
                             class="issue-slide"
-                            @touchstart="startZoom"
-                            @touchmove="moveZoom"
-                            @touchend="endZoom"
+                            @touchstart="handleTouchStart"
+                            @touchmove="handleTouchMove"
                             @click="handleClick" />
           <template v-slot:control v-if="showNavigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
@@ -91,6 +90,10 @@ const defaultSlideZoomProperties = {
     x: null,
     y: null,
     distance: 0
+  },
+  position: {
+    x: null,
+    y: null
   }
 }
 
@@ -99,6 +102,7 @@ export default {
   components: { UserConfig },
   data () {
     return {
+      carouselSwipeable: true,
       currentSlideName: null,
       firstNumber: null,
       lastNumber: null,
@@ -116,7 +120,7 @@ export default {
       },
       clickCounter: 0,
       timer: null,
-      zoomEnabled: false,
+      zoomModeEnabled: false,
       slideZoomProperties: defaultSlideZoomProperties
     }
   },
@@ -152,8 +156,8 @@ export default {
         event.touches[0].pageY - event.touches[1].pageY
       )
     },
-    startZoom (event) {
-      if (event.touches.length === 2) {
+    handleTouchStart (event) {
+      if (event.touches.length === 2 && this.zoomModeEnabled === false) {
         event.preventDefault()
 
         this.slideZoomProperties.start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
@@ -161,7 +165,13 @@ export default {
         this.slideZoomProperties.start.distance = this.distanceZoom(event)
       }
     },
-    moveZoom (event) {
+    handleTouchMove (event) {
+      this.carouselSwipeable = true
+
+      if (event.touches.length === 1 && this.zoomModeEnabled === true) {
+        this.carouselSwipeable = false
+      }
+
       if (event.touches.length === 2) {
         event.preventDefault()
 
@@ -169,8 +179,7 @@ export default {
         if (event.scale) {
           scale = event.scale
         } else {
-          const deltaDistance = this.distanceZoom(event)
-          scale = deltaDistance / this.slideZoomProperties.start.distance
+          scale = this.distanceZoom(event) / this.slideZoomProperties.start.distance
         }
 
         this.slideZoomProperties.scale = Math.min(Math.max(1, scale), 4)
@@ -178,36 +187,25 @@ export default {
         let deltaX = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - this.slideZoomProperties.start.x) * 2 // x2 for accelarated movement
         let deltaY = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - this.slideZoomProperties.start.y) * 2 // x2 for accelarated movement
 
-        let transformString = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${this.slideZoomProperties.scale})`
-        const issueSlide = document.querySelector('.issue-slide')
-        issueSlide.style.transform = transformString
-        issueSlide.style.WebkitTransform = transformString
-        issueSlide.style.zIndex = '9999'
+        this.updateZoom(deltaX, deltaY)
       }
     },
-    updateZoom () {
+    updateZoom (deltaX = 0, deltaY = 0) {
       const issueSlide = document.querySelector('.issue-slide')
 
       if (this.slideZoomProperties.scale > 1) {
-        let deltaX = this.slideZoomProperties.start.x
-        let deltaY = this.slideZoomProperties.start.y
         let transformString = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${this.slideZoomProperties.scale})`
 
         issueSlide.style.transform = transformString
         issueSlide.style.WebkitTransform = transformString
         issueSlide.style.zIndex = '9999'
+        this.zoomModeEnabled = true
       } else {
         issueSlide.style.transform = ''
         issueSlide.style.WebkitTransform = ''
         issueSlide.style.zIndex = ''
+        this.zoomModeEnabled = false
       }
-    },
-    endZoom () {
-      alert('endZoom')
-      const issueSlide = document.querySelector('.issue-slide')
-      issueSlide.style.transform = ''
-      issueSlide.style.WebkitTransform = ''
-      issueSlide.style.zIndex = ''
     },
     dragActionFloatingBtn (ev) {
       this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
@@ -220,7 +218,6 @@ export default {
       AppFullscreen.toggle()
     },
     handleClick (event) {
-      event.preventDefault()
       this.clickCounter++
       this.currentEvent = event
 
@@ -231,17 +228,16 @@ export default {
           }
 
           if (this.clickCounter === 2) {
-            this.zoomEnabled = !this.zoomEnabled
-
-            if (this.zoomEnabled === true) {
-              this.slideZoomProperties.start.x = (window.innerWidth / 2) - this.currentEvent.x
-              this.slideZoomProperties.start.y = (window.innerHeight / 2) - this.currentEvent.y
+            let deltaX, deltaY
+            if (this.slideZoomProperties.scale === 1) {
+              deltaX = (window.innerWidth / 2) - this.currentEvent.x
+              deltaY = (window.innerHeight / 2) - this.currentEvent.y
               this.slideZoomProperties.scale = 2
             } else {
               this.slideZoomProperties.scale = 1
             }
 
-            this.updateZoom()
+            this.updateZoom(deltaX, deltaY)
           }
 
           this.clickCounter = 0
