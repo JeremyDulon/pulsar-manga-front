@@ -20,7 +20,7 @@
   "dependencies": {
     "@quasar/app-webpack": "^3.9.2",
     "@quasar/extras": "^1.16.5",
-    "axios": "^1.0.0",
+    "axios": "^1.6.0",
     "cors": "^2.8.5",
     "lodash": "^4.17.20",
     "pinia": "^2.1.6",
