@@ -1,6 +1,6 @@
 <template>
   <q-input v-bind="vAttrs"
-           :type="showPassword ? 'text' : 'password'">
+           :type="passwordType">
     <template v-slot:append>
       <q-icon
           :name="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"
@@ -29,6 +29,9 @@ export default {
         'bottom-slots': true,
         ...this.$attrs
       }
+    },
+    passwordType () {
+      return this.showPassword === true ? 'password' : 'text'
     }
   }
 }

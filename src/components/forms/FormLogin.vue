@@ -26,7 +26,7 @@
       </template>
     </q-input>
     <pulsar-password v-if="!isForgot" v-model="modelValue.password"
-                  :label="`${isReset ? 'New p' : 'P'}assword` " type="password"
+                  :label="`${isReset ? 'New p' : 'P'}assword` "
                   class="col-xs-12">
       <template v-if="isLogin" #hint><a href="#" @click.prevent="onForgot">Forgot password ?</a></template>
     </pulsar-password>
@@ -34,18 +34,18 @@
       <q-btn type="submit" color="green"
              :label="isLogin ? 'Se connecter' : 'Valider'" />
     </div>
-    <div class="col-xs-12">
-      <q-separator class="q-mt-sm" />
-    </div>
-    <div class="text-center text-h6 col-xs-12">ou</div>
-    <div class="text-center text-h6 col-xs-12">
-      <span v-if="isLogin">Créer votre compte</span>
-      <span v-else>Vous avez déjà un compte ?<br />Connectez-vous avec vos identifiants.</span>
-    </div>
-    <div class="text-center col-xs-12">
-      <q-btn :color="isLogin ? 'primary' : 'white'" :label="isLogin ? `S'enregistrer` : 'Se connecter'"
-             @click="toggleRegister" />
-    </div>
+<!--    <div class="col-xs-12">-->
+<!--      <q-separator class="q-mt-sm" />-->
+<!--    </div>-->
+<!--    <div class="text-center text-h6 col-xs-12">ou</div>-->
+<!--    <div class="text-center text-h6 col-xs-12">-->
+<!--      <span v-if="isLogin">Créer votre compte</span>-->
+<!--      <span v-else>Vous avez déjà un compte ?<br />Connectez-vous avec vos identifiants.</span>-->
+<!--    </div>-->
+<!--    <div class="text-center col-xs-12">-->
+<!--      <q-btn :color="isLogin ? 'primary' : 'white'" :label="isLogin ? `S'enregistrer` : 'Se connecter'"-->
+<!--             @click="toggleRegister" />-->
+<!--    </div>-->
   </q-form>
 </template>
 
