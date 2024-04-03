@@ -11,7 +11,7 @@ const makeParamArray = (key, arr) =>
 
 const debouncedLogout = _.debounce(async () => {
   const authStore = useAuthStore()
-  toast.negative('Veuillez vous réauthentifier')
+  toast.negative({ message: 'Veuillez vous réauthentifier', timeout: 200 })
   authStore.doLogout()
 }, 500)
 

@@ -17,6 +17,11 @@ const routes = [
       {
         path: '',
         name: 'home',
+        component: ListFavoriteComicLanguage
+      },
+      {
+        path: 'list',
+        name: 'list',
         component: ListComicLanguage
       },
       {
@@ -28,11 +33,6 @@ const routes = [
         path: 'search',
         name: 'search',
         component: SearchManga
-      },
-      {
-        path: 'favorites',
-        name: 'favorites',
-        component: ListFavoriteComicLanguage
       },
       {
         path: 'user-config',
