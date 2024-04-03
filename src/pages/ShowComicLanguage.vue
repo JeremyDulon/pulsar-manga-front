@@ -2,7 +2,7 @@
   <keep-alive>
     <div>
       <q-header>
-        <q-toolbar class="bg-cyan-9">
+        <q-toolbar class="bg-cyan-9" style="height: 100px">
           <q-btn
             icon="fa fa-chevron-left"
             flat dense
@@ -195,7 +195,7 @@ export default {
       ]
 
       if (favoriteComic && favoriteComic.lastComicIssue) {
-        actions.push({
+        actions.unshift({
           label: `Resume (c: ${favoriteComic.lastComicIssue.number} - p: ${favoriteComic.lastPage})`,
           icon: 'fas fa-bookmark',
           action: () => this.goToIssue(favoriteComic.lastComicIssue.id)

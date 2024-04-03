@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
           let extractedJWT = extractJWTData(response.token)
           response.expiration = extractedJWT.exp
           this.saveToken(response)
-          toast.positive('Bienvenue')
+          toast.positive({ message: 'Bienvenue', timeout: 200 })
         })
         .then(() => {
           const userStore = useUserStore()

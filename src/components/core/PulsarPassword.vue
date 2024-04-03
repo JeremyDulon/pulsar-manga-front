@@ -31,7 +31,7 @@ export default {
       }
     },
     passwordType () {
-      return this.showPassword === true ? 'password' : 'text'
+      return this.showPassword === true ? 'text' : 'password'
     }
   }
 }

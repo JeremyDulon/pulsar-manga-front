@@ -113,7 +113,7 @@ export const postFetchApi = function ({ path, resource }, options = { body: {} }
 const handleFetchError = async (url, response) => {
   if (response.status === 401) {
     debouncedLogout()
-    throw new Error('Refresh Token expired')
+    throw new Error('Invalid Credentials')
   }
 
   if (response.status >= 400) {
