@@ -17,13 +17,13 @@
       <q-page>
         <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
                     animated
-                    :swipeable="carouselSwipeable"
+                    swipeable
                     fullscreen
                     no-route-fullscreen-exit
                     :transition-next="trNext"
                     :transition-prev="trPrev"
                     :vertical="userConfigStore.readMode === 'ttb'"
-                    ref="chapterSlider">
+                    ref="issueSlider">
           <q-carousel-slide v-for="page in orderedPages"
                             :key="page.id"
                             :name="page.id"
@@ -32,6 +32,7 @@
                             class="issue-slide"
                             @touchstart="handleTouchStart"
                             @touchmove="handleTouchMove"
+                            @touchend="handleTouchEnd"
                             @click="handleClick" />
           <template v-slot:control v-if="showNavigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
@@ -102,7 +103,6 @@ export default {
   components: { UserConfig },
   data () {
     return {
-      carouselSwipeable: true,
       currentSlideName: null,
       firstNumber: null,
       lastNumber: null,
@@ -166,15 +166,18 @@ export default {
       }
     },
     handleTouchMove (event) {
-      this.carouselSwipeable = true
-
       if (event.touches.length === 1 && this.zoomModeEnabled === true) {
-        this.carouselSwipeable = false
+        event.preventDefault()
+        event.stopPropagation()
+
+        console.log(event)
+
+        this.slideZoomProperties.position.x = event.touches[0].pageX - (window.innerWidth / 2)
+        this.slideZoomProperties.position.y = event.touches[0].pageY - (window.innerHeight / 2)
+        this.updateZoom()
       }
 
       if (event.touches.length === 2) {
-        event.preventDefault()
-
         let scale
         if (event.scale) {
           scale = event.scale
@@ -184,17 +187,24 @@ export default {
 
         this.slideZoomProperties.scale = Math.min(Math.max(1, scale), 4)
         // Calculate how much the fingers have moved on the X and Y axis
-        let deltaX = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - this.slideZoomProperties.start.x) * 2 // x2 for accelarated movement
-        let deltaY = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - this.slideZoomProperties.start.y) * 2 // x2 for accelarated movement
+        this.slideZoomProperties.position.x = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - this.slideZoomProperties.start.x) * 2 // x2 for accelarated movement
+        this.slideZoomProperties.position.y = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - this.slideZoomProperties.start.y) * 2 // x2 for accelarated movement
 
-        this.updateZoom(deltaX, deltaY)
+        this.updateZoom()
       }
     },
-    updateZoom (deltaX = 0, deltaY = 0) {
+    handleTouchEnd (event) {
+      if (this.zoomModeEnabled === true) {
+        console.log(event.changedTouches[0].pageX, event.changedTouches[0].pageY)
+        this.slideZoomProperties.start.x = event.changedTouches[0].pageX
+        this.slideZoomProperties.start.y = event.changedTouches[0].pageY
+      }
+    },
+    updateZoom () {
       const issueSlide = document.querySelector('.issue-slide')
 
       if (this.slideZoomProperties.scale > 1) {
-        let transformString = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${this.slideZoomProperties.scale})`
+        let transformString = `translate3d(${this.slideZoomProperties.position.x}px, ${this.slideZoomProperties.position.y}px, 0) scale(${this.slideZoomProperties.scale})`
 
         issueSlide.style.transform = transformString
         issueSlide.style.WebkitTransform = transformString
@@ -207,12 +217,10 @@ export default {
         this.zoomModeEnabled = false
       }
     },
-    dragActionFloatingBtn (ev) {
-      this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
-
-      console.log(this.actionFloatingBtn.position, ev.delta)
-      this.actionFloatingBtn.position.x = this.actionFloatingBtn.position.x - ev.delta.x
-      this.actionFloatingBtn.position.y = this.actionFloatingBtn.position.y - ev.delta.y
+    dragActionFloatingBtn (event) {
+      this.actionFloatingBtn.draggable = event.isFirst !== true && event.isFinal !== true
+      this.actionFloatingBtn.position.x = this.actionFloatingBtn.position.x - event.delta.x
+      this.actionFloatingBtn.position.y = this.actionFloatingBtn.position.y - event.delta.y
     },
     toggleFullScreen () {
       AppFullscreen.toggle()
@@ -228,16 +236,21 @@ export default {
           }
 
           if (this.clickCounter === 2) {
-            let deltaX, deltaY
+            // let deltaX, deltaY
             if (this.slideZoomProperties.scale === 1) {
-              deltaX = (window.innerWidth / 2) - this.currentEvent.x
-              deltaY = (window.innerHeight / 2) - this.currentEvent.y
+              this.slideZoomProperties.position.x = (window.innerWidth / 2) - this.currentEvent.x
+              this.slideZoomProperties.position.y = (window.innerHeight / 2) - this.currentEvent.y
+              this.slideZoomProperties.start.x = this.currentEvent.x
+              this.slideZoomProperties.start.y = this.currentEvent.y
               this.slideZoomProperties.scale = 2
+
+              console.log(this.currentEvent.x, this.currentEvent.y)
+              console.log(this.slideZoomProperties.position.x, this.slideZoomProperties.position.y)
             } else {
               this.slideZoomProperties.scale = 1
             }
 
-            this.updateZoom(deltaX, deltaY)
+            this.updateZoom()
           }
 
           this.clickCounter = 0
