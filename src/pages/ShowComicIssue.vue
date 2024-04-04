@@ -67,7 +67,7 @@
           >
             <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
             <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
-            <q-fab-action square color="amber-5" :icon="'fa fa-cog'" @click="toggleFullScreen" />
+            <q-fab-action square color="amber-5" :icon="'fa fa-cog'" @click="toggleDebugMode" />
           </q-fab>
         </q-page-sticky>
       </q-page>
