@@ -55,11 +55,11 @@
         <q-page-sticky position="top-left" v-if="debugMode">
           <q-card>
             <q-card-section>
-              <span>currentSlideName: {{ currentSlideName }}</span>
-              <span>clickCounter: {{ clickCounter }}</span>
-              <span>zoomEnabled: {{ zoomEnabled }}</span>
-              <span>slideZoomProperties: {{ slideZoomProperties }}</span>
-              <span>issueSlideStyle: {{ issueSlideStyle }}</span>
+              <p>currentSlideName: {{ currentSlideName }}</p>
+              <p>clickCounter: {{ clickCounter }}</p>
+              <p>zoomEnabled: {{ zoomEnabled }}</p>
+              <p>slideZoomProperties: {{ slideZoomProperties }}</p>
+              <p>issueSlideStyle: {{ issueSlideStyle }}</p>
             </q-card-section>
           </q-card>
         </q-page-sticky>
