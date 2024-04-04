@@ -52,6 +52,13 @@
             </div>
           </div>
         </q-responsive>
+        <q-page-sticky position="top-left">
+          <q-list>
+            <q-item v-for="(key, value) of $data">
+              {{ key }}: {{ value }}
+            </q-item>
+          </q-list>
+        </q-page-sticky>
         <q-page-sticky position="bottom-right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
           <q-fab
             v-if="showNavigation"
@@ -62,6 +69,7 @@
           >
             <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
             <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
+            <q-fab-action square color="amber-5" :icon="'fa fa-cog'" @click="toggleFullScreen" />
           </q-fab>
         </q-page-sticky>
       </q-page>
@@ -99,6 +107,7 @@ export default {
   components: { UserConfig },
   data () {
     return {
+      debugMode: false,
       currentSlideName: null,
       firstNumber: null,
       lastNumber: null,
@@ -217,6 +226,9 @@ export default {
     },
     toggleFullScreen () {
       AppFullscreen.toggle()
+    },
+    toggleDebugMode() {
+      this.debugMode = !this.debugMode
     },
     handleClick (event) {
       this.clickCounter++
