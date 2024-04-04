@@ -54,7 +54,7 @@
         </q-responsive>
         <q-page-sticky position="top-left">
           <q-list>
-            <q-item v-for="(key, value) of $data">
+            <q-item v-for="(key, value) of $data" :key="key">
               {{ key }}: {{ value }}
             </q-item>
           </q-list>
@@ -227,7 +227,7 @@ export default {
     toggleFullScreen () {
       AppFullscreen.toggle()
     },
-    toggleDebugMode() {
+    toggleDebugMode () {
       this.debugMode = !this.debugMode
     },
     handleClick (event) {
