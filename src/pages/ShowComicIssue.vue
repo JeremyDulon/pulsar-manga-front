@@ -53,9 +53,15 @@
           </div>
         </q-responsive>
         <q-page-sticky position="top-left" v-if="debugMode">
-            <span v-for="(key, value) of $data" :key="key">
-              {{ key }}: {{ value }}
-            </span>
+          <q-card>
+            <q-card-section>
+              <span>currentSlideName: {{ currentSlideName }}</span>
+              <span>clickCounter: {{ clickCounter }}</span>
+              <span>zoomEnabled: {{ zoomEnabled }}</span>
+              <span>slideZoomProperties: {{ slideZoomProperties }}</span>
+              <span>issueSlideStyle: {{ issueSlideStyle }}</span>
+            </q-card-section>
+          </q-card>
         </q-page-sticky>
         <q-page-sticky position="bottom-right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
           <q-fab
@@ -124,7 +130,8 @@ export default {
       clickCounter: 0,
       timer: null,
       zoomEnabled: false,
-      slideZoomProperties: defaultSlideZoomProperties
+      slideZoomProperties: defaultSlideZoomProperties,
+      issueSlideStyle: {}
     }
   },
   computed: {
@@ -190,6 +197,7 @@ export default {
         issueSlide.style.transform = transformString
         issueSlide.style.WebkitTransform = transformString
         issueSlide.style.zIndex = '9999'
+        this.issueSlideStyle = issueSlide.style.transform
       }
     },
     updateZoom () {
@@ -208,12 +216,15 @@ export default {
         issueSlide.style.WebkitTransform = ''
         issueSlide.style.zIndex = ''
       }
+      this.issueSlideStyle = issueSlide.style.transform
     },
     endZoom () {
       const issueSlide = document.querySelector('.issue-slide')
       issueSlide.style.transform = ''
       issueSlide.style.WebkitTransform = ''
       issueSlide.style.zIndex = ''
+
+      this.issueSlideStyle = issueSlide.style.transform
     },
     dragActionFloatingBtn (ev) {
       this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
