@@ -52,12 +52,10 @@
             </div>
           </div>
         </q-responsive>
-        <q-page-sticky position="top-left">
-          <q-list>
-            <q-item v-for="(key, value) of $data" :key="key">
+        <q-page-sticky position="top-left" v-if="debugMode">
+            <span v-for="(key, value) of $data" :key="key">
               {{ key }}: {{ value }}
-            </q-item>
-          </q-list>
+            </span>
         </q-page-sticky>
         <q-page-sticky position="bottom-right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
           <q-fab
