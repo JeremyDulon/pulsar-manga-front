@@ -162,8 +162,8 @@ export default {
     },
     currentTime () {
       let today = new Date()
-      let hours = today.getHours() < 9 ? '0' + today.getHours() : today.getHours()
-      let minutes = today.getMinutes() < 9 ? '0' + today.getMinutes() : today.getMinutes()
+      let hours = today.getHours() <= 9 ? '0' + today.getHours() : today.getHours()
+      let minutes = today.getMinutes() <= 9 ? '0' + today.getMinutes() : today.getMinutes()
       return hours + ':' + minutes
     }
   },
