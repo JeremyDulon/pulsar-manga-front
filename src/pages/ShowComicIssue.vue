@@ -173,9 +173,9 @@ export default {
     document.addEventListener('keyup', this.handleArrows)
     this.doMount()
     navigator.getBattery().then((battery) => {
-      this.batteryLevel = battery.level * 100
+      this.batteryLevel = (battery.level * 100).toFixed(0)
       battery.onlevelchange = () => {
-        this.batteryLevel = battery.level * 100
+        this.batteryLevel = (battery.level * 100).toFixed(0)
       }
     })
   },
