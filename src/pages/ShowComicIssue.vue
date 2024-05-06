@@ -23,7 +23,7 @@
                     :transition-next="trNext"
                     :transition-prev="trPrev"
                     :vertical="userConfigStore.readMode === 'ttb'"
-                    ref="chapterSlider">
+                    ref="issueSlider">
           <q-carousel-slide v-for="page in orderedPages"
                             :key="page.id"
                             :name="page.id"
@@ -51,6 +51,17 @@
             </div>
           </div>
         </q-responsive>
+        <q-page-sticky position="top-left" v-if="debugMode">
+          <q-card>
+            <q-card-section>
+              <p>clickCounter: {{ clickCounter }}</p>
+              <p>zoomModeEnabled: {{ zoomModeEnabled ? 'true' : 'false' }}</p>
+              <p>slideZoomProperties: {{ slideZoomProperties }}</p>
+              <p>issueSlideStyle: {{ issueSlideStyle }}</p>
+              <p>carouselSwipeable: {{ carouselSwipeable }}</p>
+            </q-card-section>
+          </q-card>
+        </q-page-sticky>
         <q-page-sticky position="bottom-right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
           <q-fab
             v-if="showNavigation"
@@ -61,6 +72,7 @@
           >
             <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
             <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
+            <q-fab-action square color="amber-5" :icon="'fa fa-cog'" @click="toggleDebugMode" />
           </q-fab>
         </q-page-sticky>
       </q-page>
@@ -83,6 +95,7 @@ import { useFavoriteStore } from '@/stores/favorite'
 import { useComicIssueStore } from '@/stores/comicIssue'
 import { useUserConfigStore } from '@/stores/userConfig'
 import UserConfig from 'pages/UserConfig.vue'
+import { toast } from '@/utils/ui'
 
 const defaultSlideZoomProperties = {
   scale: 1,
@@ -102,6 +115,7 @@ export default {
   components: { UserConfig },
   data () {
     return {
+      debugMode: false,
       carouselSwipeable: true,
       currentSlideName: null,
       firstNumber: null,
@@ -121,7 +135,8 @@ export default {
       clickCounter: 0,
       timer: null,
       zoomModeEnabled: false,
-      slideZoomProperties: defaultSlideZoomProperties
+      slideZoomProperties: defaultSlideZoomProperties,
+      issueSlideStyle: ''
     }
   },
   computed: {
@@ -166,8 +181,6 @@ export default {
       }
     },
     handleTouchMove (event) {
-      this.carouselSwipeable = true
-
       if (event.touches.length === 1 && this.zoomModeEnabled === true) {
         this.carouselSwipeable = false
       }
@@ -206,6 +219,8 @@ export default {
         issueSlide.style.zIndex = ''
         this.zoomModeEnabled = false
       }
+
+      this.issueSlideStyle = issueSlide.style.transform
     },
     dragActionFloatingBtn (ev) {
       this.actionFloatingBtn.draggable = ev.isFirst !== true && ev.isFinal !== true
@@ -216,6 +231,9 @@ export default {
     },
     toggleFullScreen () {
       AppFullscreen.toggle()
+    },
+    toggleDebugMode () {
+      this.debugMode = !this.debugMode
     },
     handleClick (event) {
       this.clickCounter++
@@ -330,6 +348,12 @@ export default {
           lastPage: pageNumber
         }
       })
+      if (this.currentPage === this.lastNumber) {
+        toast.info({ message: 'Last page reached.', timeout: 200 })
+        _.delay(() => {
+          this.goToNextComicIssue()
+        }, 200)
+      }
     }, 3000)
   },
   watch: {

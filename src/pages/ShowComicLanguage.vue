@@ -66,6 +66,7 @@
               <div
                   v-for="issue in sortedIssues"
                   :key="issue.id"
+                  :ref="isLastReadIssue(issue) ? 'lastReadIssue' : null"
                   @click="goToIssue(issue.id)">
                 <q-card
                     :class="issueClass(issue)">
@@ -137,15 +138,23 @@ export default {
     }
 
     this.userComicLanguage = this.favoriteStore.getFavorite(this.comicLanguage)
+    _.delay(() => {
+      if (this.$refs.lastReadIssue[0]) {
+        this.$refs.lastReadIssue[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }, 1000)
   },
   methods: {
     plr: (str, sub) => plr(str, sub),
     issueClass (issue) {
       let classes = []
-      if (this.userComicLanguage && this.userComicLanguage.lastComicIssue.id === issue.id) {
+      if (this.isLastReadIssue(issue)) {
         classes.push('issue-light')
       }
       return classes
+    },
+    isLastReadIssue (issue) {
+      return this.userComicLanguage && this.userComicLanguage.lastComicIssue.id === issue.id
     },
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
