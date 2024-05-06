@@ -12,6 +12,10 @@
         <q-btn v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue"/>
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
+      <q-toolbar inset>
+        <q-chip icon="fa fa-battery-full">{{ batteryLevel }}%</q-chip>
+        <q-chip icon="fa fa-clock">{{ currentTime }}</q-chip>
+      </q-toolbar>
     </q-header>
     <q-page-container>
       <q-page>
@@ -136,7 +140,8 @@ export default {
       timer: null,
       zoomModeEnabled: false,
       slideZoomProperties: defaultSlideZoomProperties,
-      issueSlideStyle: ''
+      issueSlideStyle: '',
+      batteryLevel: null
     }
   },
   computed: {
@@ -154,6 +159,10 @@ export default {
     },
     currentPage () {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
+    },
+    currentTime () {
+      let today = new Date()
+      return today.getHours() + ':' + today.getMinutes()
     }
   },
   unmounted () {
@@ -163,6 +172,12 @@ export default {
   async mounted () {
     document.addEventListener('keyup', this.handleArrows)
     this.doMount()
+    navigator.getBattery().then((battery) => {
+      this.batteryLevel = battery.level * 100
+      battery.onlevelchange = () => {
+        this.batteryLevel = battery.level * 100
+      }
+    })
   },
   methods: {
     distanceZoom (event) {
