@@ -13,8 +13,8 @@
         <q-btn icon="fa fa-cog" @click="showSettings = !showSettings" />
       </q-toolbar>
       <q-toolbar inset>
-        <q-chip icon="fa fa-battery-full">{{ batteryLevel }}%</q-chip>
-        <q-chip icon="fa fa-clock">{{ currentTime }}</q-chip>
+        <q-chip v-if="commonInfo.batteryLevel" icon="fa fa-battery-full">{{ commonInfo.batteryLevel }}%</q-chip>
+        <q-chip v-if="commonInfo.currentTime" icon="fa fa-clock">{{ commonInfo.currentTime }}</q-chip>
       </q-toolbar>
     </q-header>
     <q-page-container>
@@ -141,7 +141,10 @@ export default {
       zoomModeEnabled: false,
       slideZoomProperties: defaultSlideZoomProperties,
       issueSlideStyle: '',
-      batteryLevel: null
+      commonInfo: {
+        batteryLevel: null,
+        currentTime: null
+      }
     }
   },
   computed: {
@@ -159,12 +162,6 @@ export default {
     },
     currentPage () {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
-    },
-    currentTime () {
-      let today = new Date()
-      let hours = today.getHours() <= 9 ? '0' + today.getHours() : today.getHours()
-      let minutes = today.getMinutes() <= 9 ? '0' + today.getMinutes() : today.getMinutes()
-      return hours + ':' + minutes
     }
   },
   unmounted () {
@@ -175,11 +172,12 @@ export default {
     document.addEventListener('keyup', this.handleArrows)
     this.doMount()
     navigator.getBattery().then((battery) => {
-      this.batteryLevel = (battery.level * 100).toFixed(0)
+      this.commonInfo.batteryLevel = (battery.level * 100).toFixed(0)
       battery.onlevelchange = () => {
-        this.batteryLevel = (battery.level * 100).toFixed(0)
+        this.commonInfo.batteryLevel = (battery.level * 100).toFixed(0)
       }
     })
+    setInterval(() => this.updateCurrentTime())
   },
   methods: {
     distanceZoom (event) {
@@ -357,19 +355,24 @@ export default {
       let page = this.currentPage === this.lastNumber ? this.currentPage : this.currentPage + 1
       this.changeSlide(page)
     },
+    updateCurrentTime () {
+      let today = new Date()
+      let hours = today.getHours() <= 9 ? '0' + today.getHours() : today.getHours()
+      let minutes = today.getMinutes() <= 9 ? '0' + today.getMinutes() : today.getMinutes()
+      this.commonInfo.currentTime = hours + ':' + minutes
+    },
     updateReadPage: _.debounce(async function (pageNumber) {
-      this.favoriteStore.doUpdateFavorite({
-        body: {
-          comicLanguage: this.comicIssue.comicLanguage['@id'],
-          lastComicIssue: this.comicIssue['@id'],
-          lastPage: pageNumber
-        }
-      })
       if (this.currentPage === this.lastNumber) {
         toast.info({ message: 'Last page reached.', timeout: 200 })
-        _.delay(() => {
-          this.goToNextComicIssue()
-        }, 200)
+        this.goToNextComicIssue()
+      } else {
+        this.favoriteStore.doUpdateFavorite({
+          body: {
+            comicLanguage: this.comicIssue.comicLanguage['@id'],
+            lastComicIssue: this.comicIssue['@id'],
+            lastPage: pageNumber
+          }
+        })
       }
     }, 3000)
   },
