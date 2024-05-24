@@ -144,7 +144,8 @@ export default {
       commonInfo: {
         batteryLevel: null,
         currentTime: null
-      }
+      },
+      fullscreenEnabled: false
     }
   },
   computed: {
@@ -166,7 +167,8 @@ export default {
   },
   unmounted () {
     AppFullscreen.exit()
-    document.addEventListener('keyup', this.handleArrows)
+    document.removeEventListener('keyup', this.handleArrows)
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange)
   },
   async mounted () {
     document.addEventListener('keyup', this.handleArrows)
@@ -178,6 +180,8 @@ export default {
       }
     })
     setInterval(() => this.updateCurrentTime())
+
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
   },
   methods: {
     distanceZoom (event) {
@@ -245,6 +249,7 @@ export default {
       this.actionFloatingBtn.position.y = this.actionFloatingBtn.position.y - ev.delta.y
     },
     toggleFullScreen () {
+      this.fullscreenEnabled = !this.fullscreenEnabled
       AppFullscreen.toggle()
     },
     toggleDebugMode () {
@@ -341,6 +346,11 @@ export default {
           break
       }
     },
+    handleVisibilityChange() {
+      if (document.visibilityState === 'visible' && this.fullscreenEnabled === true) {
+        AppFullscreen.request()
+      }
+    },
     changeSlide (newPage) {
       let comicPage = this.comicPages.find((page) => page.number === newPage)
       if (comicPage) {
@@ -374,7 +384,7 @@ export default {
           }
         })
       }
-    }, 3000)
+    }, 1500)
   },
   watch: {
     currentPage: {
