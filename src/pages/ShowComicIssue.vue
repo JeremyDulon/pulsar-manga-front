@@ -181,7 +181,7 @@ export default {
     })
     setInterval(() => this.updateCurrentTime())
 
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange)
   },
   methods: {
     distanceZoom (event) {
@@ -346,7 +346,7 @@ export default {
           break
       }
     },
-    handleVisibilityChange() {
+    handleVisibilityChange () {
       if (document.visibilityState === 'visible' && this.fullscreenEnabled === true) {
         AppFullscreen.request()
       }
