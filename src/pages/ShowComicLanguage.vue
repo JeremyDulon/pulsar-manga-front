@@ -139,7 +139,7 @@ export default {
 
     this.userComicLanguage = this.favoriteStore.getFavorite(this.comicLanguage)
     _.delay(() => {
-      if (this.$refs.lastReadIssue[0]) {
+      if (this.$refs.lastReadIssue && this.$refs.lastReadIssue[0]) {
         this.$refs.lastReadIssue[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }, 1000)
@@ -154,7 +154,7 @@ export default {
       return classes
     },
     isLastReadIssue (issue) {
-      return this.userComicLanguage && this.userComicLanguage.lastComicIssue.id === issue.id
+      return this.userComicLanguage && this.userComicLanguage && this.userComicLanguage.lastComicIssue.id === issue.id
     },
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
