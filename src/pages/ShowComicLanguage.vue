@@ -154,7 +154,7 @@ export default {
       return classes
     },
     isLastReadIssue (issue) {
-      return this.userComicLanguage && this.userComicLanguage && this.userComicLanguage && this.userComicLanguage.lastComicIssue.lastComicIssue.id === issue.id
+      return this.userComicLanguage && this.userComicLanguage && this.userComicLanguage.lastComicIssue && this.userComicLanguage.lastComicIssue.id === issue.id
     },
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
