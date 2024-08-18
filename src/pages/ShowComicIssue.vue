@@ -6,7 +6,7 @@
           @click="goToComic"
           size="lg" icon="fa fa-angle-left" color="black" />
         <q-toolbar-title v-if="comicIssue">
-          <div class="text-h6">{{ currentPage }}/{{ lastNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
+          <div class="text-h6">{{ currentPageNumber }}/{{ lastPageNumber }} {{ comicIssue.number }}: {{ comicIssue.title }}</div>
         </q-toolbar-title>
         <q-btn :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen"/>
         <q-btn v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue"/>
@@ -39,12 +39,12 @@
                             @click="handleClick" />
           <template v-slot:control v-if="showNavigation">
             <q-carousel-control position="bottom" :offset="[0,0]" class="pulsar-slider">
-              <q-slider v-model="currentPage"
+              <q-slider v-model="sliderPageNumber"
                         label
-                        :label-value="currentPage"
+                        :label-value="sliderPageNumber"
                         label-always
-                        :min="firstNumber"
-                        :max="lastNumber" />
+                        :min="firstPageNumber"
+                        :max="lastPageNumber" />
             </q-carousel-control>
           </template>
         </q-carousel>
@@ -122,8 +122,9 @@ export default {
       debugMode: false,
       carouselSwipeable: true,
       currentSlideName: null,
-      firstNumber: null,
-      lastNumber: null,
+      firstPageNumber: null,
+      lastPageNumber: null,
+      sliderPageNumber: null,
       showNavigation: false,
       showSettings: false,
       comicIssue: null,
@@ -161,7 +162,7 @@ export default {
     trPrev () {
       return this.userConfigStore.readMode === 'ttb' ? 'slide-down' : 'slide-right'
     },
-    currentPage () {
+    currentPageNumber () {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
     }
   },
@@ -305,8 +306,8 @@ export default {
         }
         this.comicPages = this.comicIssue.comicPages
         this.preloadPages()
-        this.firstNumber = _.minBy(this.comicPages, (i) => i.number).number
-        this.lastNumber = _.maxBy(this.comicPages, (i) => i.number).number
+        this.firstPageNumber = _.minBy(this.comicPages, (i) => i.number).number
+        this.lastPageNumber = _.maxBy(this.comicPages, (i) => i.number).number
         this.changeSlide(page)
       }
     },
@@ -355,14 +356,15 @@ export default {
       let comicPage = this.comicPages.find((page) => page.number === newPage)
       if (comicPage) {
         this.currentSlideName = comicPage.id
+        this.sliderPageNumber = newPage
       }
     },
     goToPrev () {
-      let page = this.currentPage === this.firstNumber ? this.currentPage : this.currentPage - 1
+      let page = this.currentPageNumber === this.firstPageNumber ? this.currentPageNumber : this.currentPageNumber - 1
       this.changeSlide(page)
     },
     goToNext () {
-      let page = this.currentPage === this.lastNumber ? this.currentPage : this.currentPage + 1
+      let page = this.currentPageNumber === this.lastPageNumber ? this.currentPageNumber : this.currentPageNumber + 1
       this.changeSlide(page)
     },
     updateCurrentTime () {
@@ -372,7 +374,7 @@ export default {
       this.commonInfo.currentTime = hours + ':' + minutes
     },
     updateReadPage: _.debounce(async function (pageNumber) {
-      if (this.currentPage === this.lastNumber) {
+      if (this.currentPageNumber === this.lastPageNumber) {
         toast.info({ message: 'Last page reached.', timeout: 200 })
         this.goToNextComicIssue()
       } else {
@@ -387,9 +389,14 @@ export default {
     }, 1500)
   },
   watch: {
-    currentPage: {
+    currentPageNumber: {
       handler: function (newVal) {
         this.updateReadPage(newVal)
+      }
+    },
+    sliderPageNumber: {
+      handler: function (newVal) {
+        this.changeSlide(newVal)
       }
     },
     '$route': {
