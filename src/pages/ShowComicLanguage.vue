@@ -154,7 +154,7 @@ export default {
       return classes
     },
     isLastReadIssue (issue) {
-      return this.userComicLanguage && this.userComicLanguage && this.userComicLanguage.lastComicIssue && this.userComicLanguage.lastComicIssue.id === issue.id
+      return this.userComicLanguage?.lastComicIssue?.id === issue.id
     },
     toggleSortOrder () {
       this.sortDesc = !this.sortDesc
@@ -178,7 +178,8 @@ export default {
       return dateFormatIso(d)
     },
     isRecentIssue (issue) {
-      return getDaysDiffFromNow(issue.date) <= RECENT_ISSUES_DAYS_LIMIT
+      return getDaysDiffFromNow(issue.date) <= RECENT_ISSUES_DAYS_LIMIT &&
+        this.userComicLanguage?.lastComicIssue?.number < issue.number
     }
   },
   computed: {
