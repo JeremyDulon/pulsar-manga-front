@@ -374,7 +374,7 @@ export default {
       this.commonInfo.currentTime = hours + ':' + minutes
     },
     updateReadPage: _.debounce(async function (pageNumber) {
-      if (this.currentPageNumber === this.lastPageNumber) {
+      if (this.currentPageNumber === this.lastPageNumber && this.comicIssueStore.nextItem !== null) {
         toast.info({ message: 'Last page reached.', timeout: 200 })
         this.goToNextComicIssue()
       } else {
