@@ -20,6 +20,7 @@
     <q-page-container>
       <q-page>
         <q-carousel v-if="comicPages.length !== 0" v-model="currentSlideName"
+                    @update:model-value="updateSliderPageNumber"
                     animated
                     :swipeable="carouselSwipeable"
                     fullscreen
@@ -357,6 +358,12 @@ export default {
       if (comicPage) {
         this.currentSlideName = comicPage.id
         this.sliderPageNumber = newPage
+      }
+    },
+    updateSliderPageNumber (newVal) {
+      let comicPage = this.comicPages.find((page) => page.id === newVal)
+      if (comicPage) {
+        this.sliderPageNumber = comicPage.number
       }
     },
     goToPrev () {
