@@ -83,11 +83,10 @@
       </q-page>
     </q-page-container>
     <q-dialog v-model="showSettings">
-      <q-card>
-        <q-card-section>
-          <user-config />
-        </q-card-section>
-      </q-card>
+      <div class="q-pa-md row items-start q-gutter-md">
+        <form-quality :comic-issue-id="comicIssue.id" @quality:updated="showSettings = false" />
+        <user-config />
+      </div>
     </q-dialog>
   </div>
 </template>
@@ -101,6 +100,7 @@ import { useComicIssueStore } from '@/stores/comicIssue'
 import { useUserConfigStore } from '@/stores/userConfig'
 import UserConfig from 'pages/UserConfig.vue'
 import { toast } from '@/utils/ui'
+import FormQuality from 'components/forms/FormQuality.vue'
 
 const defaultSlideZoomProperties = {
   scale: 1,
@@ -117,7 +117,7 @@ const defaultSlideZoomProperties = {
 
 export default {
   name: 'ShowComicIssue',
-  components: { UserConfig },
+  components: { FormQuality, UserConfig },
   data () {
     return {
       debugMode: false,

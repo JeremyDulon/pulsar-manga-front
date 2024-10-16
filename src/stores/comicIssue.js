@@ -19,6 +19,16 @@ export const useComicIssueStore = defineStore('comicIssue', {
         .then((data) => {
           this.nextItem = data
         })
+    },
+    doUpdateQuality (options = {}) {
+      let body = {
+        quality: options.body.quality
+      }
+
+      return fetchApi({ path: API_PREFIX + 'comic_issues/' + options.id }, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+      })
     }
   }
 })
