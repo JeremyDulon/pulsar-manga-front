@@ -382,9 +382,9 @@ export default {
     },
     updateReadPage: _.debounce(async function (pageNumber) {
       if (
-        this.currentPageNumber === this.lastPageNumber
-        && this.comicIssueStore.nextItem !== null
-        && this.userConfigStore.readMode.mode === 'auto'
+        this.currentPageNumber === this.lastPageNumber &&
+        this.comicIssueStore.nextItem !== null &&
+        this.userConfigStore.readMode.mode === 'auto'
       ) {
         toast.info({ message: 'Last page reached.', timeout: 200 })
         this.goToNextComicIssue()
