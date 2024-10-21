@@ -1,14 +1,21 @@
 <template>
     <div class="fit row wrap justify-center items-center content-center">
       <q-card>
-        <q-card-section class="text-center">
-          Read Direction
+        <q-card-section class="flex flex-center">
+            <h6>Read Direction</h6>
+            <div>
+              <q-radio v-model="userConfigStore.readMode.direction" val="ltr" label="Left to Right" />
+              <q-radio v-model="userConfigStore.readMode.direction" val="rtl" label="Right to Left" />
+              <q-radio v-model="userConfigStore.readMode.direction" val="ttb" label="Top to Bottom" />
+            </div>
         </q-card-section>
         <q-separator />
         <q-card-section class="flex flex-center">
-            <q-radio v-model="userConfigStore.readMode" val="ltr" label="Left to Right" />
-            <q-radio v-model="userConfigStore.readMode" val="rtl" label="Right to Left" />
-            <q-radio v-model="userConfigStore.readMode" val="ttb" label="Top to Bottom" />
+            <h6>Read Mode</h6>
+            <div>
+              <q-radio v-model="userConfigStore.readMode.mode" val="manual" label="Manual" />
+              <q-radio v-model="userConfigStore.readMode.mode" val="auto" label="Auto" />
+            </div>
         </q-card-section>
       </q-card>
     </div>
