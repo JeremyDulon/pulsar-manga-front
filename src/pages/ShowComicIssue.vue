@@ -67,18 +67,20 @@
             </q-card-section>
           </q-card>
         </q-page-sticky>
-        <q-page-sticky position="bottom-right" :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]">
-          <q-fab
-            v-if="showNavigation"
-            icon="keyboard_arrow_left"
-            direction="left"
-            color="amber-5"
-            v-touch-pan.prevent.mouse="dragActionFloatingBtn"
-          >
-            <q-fab-action square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
-            <q-fab-action square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
-            <q-fab-action square color="amber-5" :icon="'fa fa-cog'" @click="toggleDebugMode" />
-          </q-fab>
+        <q-page-sticky position="bottom-right"
+                       class="column"
+                       v-if="showNavigation"
+                       :offset="[ actionFloatingBtn.position.x, actionFloatingBtn.position.y ]"
+                       v-touch-pan.prevent.mouse="dragActionFloatingBtn">
+          <div class="col">
+            <q-btn square color="amber-5" v-if="comicIssueStore.nextItem && comicIssueStore.nextItem.id" icon="fa fa-forward-step" @click="goToNextComicIssue" />
+          </div>
+          <div class="col">
+            <q-btn square color="amber-5" :icon="'fa ' + ($q.fullscreen.isActive ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt')" @click="toggleFullScreen" />
+          </div>
+          <div class="col">
+            <q-btn square color="amber-5" :icon="'fa fa-cog'" @click="toggleDebugMode" />
+          </div>
         </q-page-sticky>
       </q-page>
     </q-page-container>
@@ -175,12 +177,14 @@ export default {
   async mounted () {
     document.addEventListener('keyup', this.handleArrows)
     this.doMount()
-    navigator.getBattery().then((battery) => {
-      this.commonInfo.batteryLevel = (battery.level * 100).toFixed(0)
-      battery.onlevelchange = () => {
+    if (typeof navigator.getBattery === 'function') {
+      navigator.getBattery().then((battery) => {
         this.commonInfo.batteryLevel = (battery.level * 100).toFixed(0)
-      }
-    })
+        battery.onlevelchange = () => {
+          this.commonInfo.batteryLevel = (battery.level * 100).toFixed(0)
+        }
+      })
+    }
     setInterval(() => this.updateCurrentTime())
 
     document.addEventListener('visibilitychange', this.handleVisibilityChange)
