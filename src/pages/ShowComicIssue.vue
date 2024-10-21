@@ -27,7 +27,7 @@
                     no-route-fullscreen-exit
                     :transition-next="trNext"
                     :transition-prev="trPrev"
-                    :vertical="userConfigStore.readMode === 'ttb'"
+                    :vertical="userConfigStore.readMode.direction === 'ttb'"
                     ref="issueSlider">
           <q-carousel-slide v-for="page in orderedPages"
                             :key="page.id"
@@ -160,10 +160,10 @@ export default {
       ])
     },
     trNext () {
-      return this.userConfigStore.readMode === 'ttb' ? 'slide-up' : 'slide-left'
+      return this.userConfigStore.readMode.direction === 'ttb' ? 'slide-up' : 'slide-left'
     },
     trPrev () {
-      return this.userConfigStore.readMode === 'ttb' ? 'slide-down' : 'slide-right'
+      return this.userConfigStore.readMode.direction === 'ttb' ? 'slide-down' : 'slide-right'
     },
     currentPageNumber () {
       return this.currentSlideName !== null ? this.comicPages.find((page) => page.id === this.currentSlideName).number : 1
@@ -345,10 +345,10 @@ export default {
           this.goToNext()
           break
         case 'ArrowLeft':
-          this.userConfigStore.readMode === 'rtl' ? this.goToNext() : this.goToPrev()
+          this.userConfigStore.readMode.direction === 'rtl' ? this.goToNext() : this.goToPrev()
           break
         case 'ArrowRight':
-          this.userConfigStore.readMode === 'rtl' ? this.goToPrev() : this.goToNext()
+          this.userConfigStore.readMode.direction === 'rtl' ? this.goToPrev() : this.goToNext()
           break
       }
     },
